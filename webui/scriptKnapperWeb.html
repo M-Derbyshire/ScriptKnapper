@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <title>ScriptKnapper Web UI</title>
+        <link rel="stylesheet" type="text/css" href="scriptKnapperStyle.css"></style>
+        
+        <!-- This is the scripts specific to the UI -->
+        <script src="./scriptKnapperUIScript.js"></script>
+        
+        <!-- This is the link to the function library -->
+        <!-- <script src=""></script> -->
+    </head>
+    <body>
+        <header>
+            <h1>ScriptKnapper Web UI</h1>
+            <p id="appDescription">
+                Enter the template JSON, and the markup JSON, and then select Transpile to generate your script.
+            </p>
+        </header>
+        
+        <main>
+            <div class="container">
+                
+                <div class="textAreaContainer" id="templateContainer">
+                    <h2>
+                        Template JSON
+                    </h2>
+                    <textarea id="templateInput" rows="28"></textarea>
+                </div>
+                
+                <div class="textAreaContainer" id="markupContainer">
+                    <h2>
+                        Markup JSON
+                    </h2>
+                    <textarea id="markupInput" rows="28"></textarea>
+                </div>
+                
+                <div class="textAreaContainer" id="markupContainer">
+                    <h2>
+                        Output
+                    </h2>
+                    <textarea id="markupOutput" rows="28"></textarea>
+                </div>
+            </div>
+            <div class="buttonContainer">
+                <button id="transpileButton">Transpile</button>
+            </div>
+        </main>
+    </body>
+</html>

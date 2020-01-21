@@ -1,0 +1,39 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #4CA6FF;
+    color: #0E134C;
+}
+
+h2 {
+    font-size: 1.2em;
+    margin: 0.2em;
+}
+
+.container {
+    display: flex;
+}
+
+.textAreaContainer {
+    flex: 1 1 33%;
+    flex-wrap: wrap;
+    padding: 0.5em;
+    margin: 5px;
+    background-color: #cccccc;
+    border: 1px solid black;
+}
+
+.textAreaContainer textarea {
+    resize: none; /* This will disable the resize grabber */
+    height: 100%;
+    width: 100%;
+}
+
+.buttonContainer {
+    margin: 5px;
+    float: right;
+}
+
+.buttonContainer button {
+    font-size: 2em;
+    
+}
