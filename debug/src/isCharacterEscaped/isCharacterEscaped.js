@@ -12,6 +12,11 @@
 
 function isCharacterEscaped(text)
 {
+    if(text.length < 2)
+    {
+        return false;
+    }
+    
     let escaped = false;
     
     for(let i = text.length - 2; i >= 0; i--)
