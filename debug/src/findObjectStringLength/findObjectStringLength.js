@@ -46,14 +46,7 @@ function findObjectStringLength(objectText)
         i++; //In the last iteration of the loop, this will become the length to return.
     }
     
-    if(layer > 0)
-    {
-        return -1;
-    }
-    else
-    {
-        return i;
-    }
+    return (layer > 0) ? -1 : i;
 }
 
 export default findObjectStringLength;
