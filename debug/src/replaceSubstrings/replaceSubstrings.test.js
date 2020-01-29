@@ -11,3 +11,13 @@ test("replaceSubstrings will replace the requested substrings with the given rep
     expect(result).toBe("The ball was small and flat");
     
 });
+
+test("replaceSubstrings will replace multiple matches of the requested substring", () => {
+    
+    const result = replaceSubstrings("The one one one", [
+        { from: "one", to: "two" }
+    ]);
+    
+    expect(result).toBe("The two two two");
+    
+});

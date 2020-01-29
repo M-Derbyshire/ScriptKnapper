@@ -17,10 +17,14 @@
 
 function replaceSubstrings(text, replacements)
 {
+    //Using RegEx means all matches are changed, and can be case-insensitive.
+    let fromRegEx;
+    
     // This seems to be a collection, so .foreach just won't work.
     for(let i = 0; i < replacements.length; i++)
     {
-        text = text.replace(replacements[i].from, replacements[i].to);
+        fromRegEx = new RegExp(replacements[i].from, 'gi');
+        text = text.replace(fromRegEx, replacements[i].to);
     }
     
     return text;
