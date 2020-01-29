@@ -1,5 +1,17 @@
 import findObjectStringLength from './findObjectStringLength';
 
+test("findObjectStringLength will return the correct length of the object in a string", ()=> {
+    
+    const objectText = "{ 'data': { 'a': 'hello', 'b': 'goodbye' } } goodbye";
+    
+    const result = findObjectStringLength(objectText);
+    
+    expect(result).toBe(44);
+    
+});
+
+// -------------------------------------------------------------------------------------
+
 test("findObjectStringLength will return -1 if given an incomplete object string", ()=> {
     
     const objectText = "{ 'data': { 'a': 'hello', 'b': 'goodbye' }";
@@ -42,27 +54,5 @@ test("findObjectStringLength will return the correct length for a given multi-la
     const result = findObjectStringLength(objectText);
     
     expect(result).toBe(objectText.length);
-    
-});
-
-// -----------------------------------------------------------------------------------------
-
-test("findObjectStringLength will return the correct length for an object string containing escaped braces", () => {
-    
-    const objectText = String.raw`{ 'foo': { 'bar': '\{' } }`;
-    
-    const result = findObjectStringLength(objectText);
-    
-    expect(result).toBe(objectText.length);
-    
-});
-
-test("findObjectStringLength will return -1 for an object string where an escaped brace makes the object invalid", () => {
-    
-    const objectText = String.raw`{ 'foo': { 'bar': 'hello' \} }`;
-    
-    const result = findObjectStringLength(objectText);
-    
-    expect(result).toBe(-1);
     
 });

@@ -1,14 +1,8 @@
-import isCharacterEscaped from '../isCharacterEscaped/isCharacterEscaped';
-
 /*
     Inputs:
         - objectText: The string of text that will contain the 
                     object. This string should begin with the 
-                    opening brace. The opening brace will have
-                    already been checked to make sure it isn't
-                    escaped, however any other opening brace
-                    within the object will be checked here.
-            
+                    opening brace.
     Output:
         - This function will return the length of the substring
             that makes up this object (including the handlebar 
@@ -30,23 +24,29 @@ function findObjectStringLength(objectText)
                     // what "layer" are we on?
     let currentChar = "";
     let i = 0; // We want to use this later when returning
+    
     while(i < objectText.length)
     {
         currentChar = objectText.charAt(i);
         
-        if(currentChar == "{" && !isCharacterEscaped(objectText.substring(0, i + 1)))
+        if(currentChar == "{")
         {
             layer++;
         }
-        else if (currentChar == "}" && !isCharacterEscaped(objectText.substring(0, i + 1)))
+        else if (currentChar == "}")
         {
             layer--;
+            
+            if(layer === 0)
+            {
+                return i + 1; // This is now the length to return
+            }
         }
         
-        i++; //In the last iteration of the loop, this will become the length to return.
+        i++;
     }
     
-    return (layer > 0) ? -1 : i;
+    return -1; //If we are here, then layer must be greater than 0
 }
 
 export default findObjectStringLength;
