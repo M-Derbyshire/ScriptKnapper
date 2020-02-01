@@ -27,6 +27,8 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     let resultIsError = false;
     let resultText = "";
     let errPreText; //The first part of the string to feed into prepareErrorMessage()
+    let errTemplateName = ""; //The current template name to feed into prepareErrorMessage()
+    let errDataJSON = ""; // the current data object, in string form, to feed into prepareErrorMessage()
     let template; //The template that is currently being used.
     
     // Try to parse the JSON data into objects, and make sure everything is correct
@@ -40,8 +42,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
         markupObjects = JSON.parse(markupObjectsJSON);
         
         
-        
-        //!!!!! main loops down here !!!!!!!!!!!
+        //Start looping through the markup objects (and every data object with them)
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
             // If there is an issue with this markup object, return the error
@@ -55,15 +56,88 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
             }
             
             
+            //Populate the template with the provided data, and add to the result
+            //(for every passed data object).
+            let templateObject = templateObjects.filter(template => (template.name === templateName))[0];
+            errTemplateName = templateObject.name;
             
+            for(let dataIter = 0; dataIter < markupObjects[markupIter].data.length; dataIter++)
+            {
+                errDataJSON = JSON.stringify([markupObjects[markupIter].data[dataIter]]);
+                
+                //Populate the template with the data values
+                let [thisIterationResultIsError, thisIterationResultText] = populateTemplate(
+                    markupObjects[markupIter].data[dataIter],
+                    templateObject.name,
+                    templateObject.template
+                );
+                
+                if(thisIterationResultIsError)
+                {
+                    return [
+                        true,
+                        thisIterationResultText
+                    ];
+                }
+                
+                //Now we need to check if there's any embedded template calls,
+                //and resolve them.
+                let braceIndex;
+                let objectLength;
+                while(braceIndex = thisIterationResultText.indexOf("{{") > -1)
+                {
+                    errPreText = "Encountered a problem parsing call to embedded template: ";
+                    
+                    objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex));
+                    if(objectLength === -1)
+                    {
+                        throw "Embedded template object is invalid or incomplete.";
+                    }
+                    else
+                    {
+                        // Bear in mind we don't want to include the outer braces (it's currently 
+                        //double braces, and we want single)
+                        [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
+                            thisIterationResultText.substr(braceIndex + 1, objectLength - 2),
+                            templateObjectsJSON
+                        );
+                        
+                        if(embeddedTemplateResultIsError)
+                        {
+                            return [
+                                true,
+                                embeddedTemplateResultText
+                            ];
+                        }
+                        else
+                        {
+                            thisIterationResultText += embeddedTemplateResultText;
+                        }
+                    }
+                }
+                
+                //Finally, add to the result to be returned.
+                resultText += thisIterationResultText;
+            }
         }
     }
     catch(err)
     {
         return [
             true,
-            prepareErrorMessage(errPreText + err)
+            prepareErrorMessage(errPreText + err, errTemplateName, errDataJSON)
         ];
+    }
+    
+    
+    
+    //Now, finally, change any @ohb and @chd in the template into single braces
+    if(!resultIsError)
+    {
+        resultText = replaceSubstrings(resultText, [
+            { from: "@ohb", to: "{" },
+            { from: "@chb", to: "}" }
+        ]);
     }
     
     return [resultIsError, resultText];
@@ -124,14 +198,7 @@ function codeToBeUsedMaybe()
 
 
 
-    //Now, change any @ohb and @chd in the template into single braces
-    if(!resultIsError)
-    {
-        resultText = replaceSubstrings(resultText, [
-            { from: "@ohb", to: "{" },
-            { from: "@chb", to: "}" }
-        ]);
-    }
+    
 
 
     // ----------------------------------------------------------------------------------
