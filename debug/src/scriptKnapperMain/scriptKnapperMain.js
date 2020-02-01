@@ -3,6 +3,7 @@ import mergeObjects from './../mergeObjects/mergeObjects';
 import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
 import replaceSubstrings from './../replaceSubstrings/replaceSubstrings';
 import findObjectStringLength from './../findObjectStringLength/findObjectStringLength';
+import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMarkupObjectError';
 
 /*
     Inputs:
@@ -43,30 +44,18 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
         //!!!!! main loops down here !!!!!!!!!!!
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
-            errPreText = "Encountered a problem parsing the provided markup JSON: ";
-            
-            // Firstly, get the template string, or deal with the called template not existing
-            let templateText;
-            let templateName = markupObjects[markupIter].template;
-            let templatesMatchingName = templateObjects.filter(template => (template.name === templateName));
-            if(templatesMatchingName.length === 0)
+            // If there is an issue with this markup object, return the error
+            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
+            if(markupHasError)
             {
-                throw "The given template name (" + templateName + ") is not recognised.";
-            }
-            else if (templatesMatchingName.length > 1)
-            {
-                throw "The given template name (" + templateName + ") has more than one match.";
-            }
-            else
-            {
-                templateText = templatesMatchingName[0].template;
+                return [
+                    true,
+                    markupCheckText
+                ];
             }
             
-            //Next, is the data property an array?
-            if(!Array.isArray(markupObjects[markupIter].data))
-            {
-                throw "The provided data to the " + markupObjects[markupIter].template + " template is not in an array.";
-            }
+            
+            
         }
     }
     catch(err)

@@ -166,55 +166,6 @@ test("scriptKnapperMain will return an error if the given markup or template JSO
     expect(resultError2).toBeTruthy();
 });
 
-test("scriptKnapperMain will return an error if the given data object is not an array", () => {
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: "data"
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
-});
-
-test("scriptKnapperMain will return an error if it cannot find the requested template", () => {
-    
-    const templateName = "nonexistentTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                data2: "theData2",
-                data3: "theData3" 
-            },
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
-});
-
-
 test("scriptKnapperMain will return an error if a given embedded template request object isn't complete", () => {
     
     const templateName = "simpleTemplate";
