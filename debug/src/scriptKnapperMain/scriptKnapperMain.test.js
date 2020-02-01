@@ -98,7 +98,7 @@ test("scriptKnapperMain will embed the results of another template into the resu
     expect(resultText).toContain("theEmbeddedData2");
 });
 
-test("scriptKnapperMain will embed the results of a template call within an inner template call into the result", () => {
+test("scriptKnapperMain will embed the results of a template call within a property, that's within an inner template call, into the result", () => {
     
     const templateName = "simpleTemplate";
     
@@ -107,18 +107,22 @@ test("scriptKnapperMain will embed the results of a template call within an inne
         data: [
             { 
                 data1: "theData1", 
-                data2: 'testTemplate: {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{{ "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" } }}" }] }} - This is now the string again. ',
-                data3: "theData3" 
+                data2: '{{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "embedLayer3Data" }] }}',
+                data3: "theData3",
+                embedLayer3Data: '"embedLayer3Data": "{{ "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] }}"'
             },
         ]
     };
+    
+    //Data 2 originally:
+    //'hello {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{{ "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] }}" }] }}'
     
     const markupObjects = JSON.stringify([
         markup
     ]);
     
     const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
+    console.log(resultText);
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
     

@@ -11,6 +11,8 @@ import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMa
                     entered into the template.
         - templateObjectsJSON: This is the JSON which is used when
                     generating errors.
+        - isInnerTemplate: A boolean value. Is this call for an
+                    template within a template?
             
     Output:
         - This function will return an array with 2 values,
@@ -22,7 +24,7 @@ import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMa
             or an error if there was a problem during the
             process.
 */
-function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
+function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTemplate = false)
 {
     let resultIsError = false;
     let resultText = "";
@@ -39,7 +41,6 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
         
         errPreText = "Encountered a problem parsing the provided markup JSON: ";
         markupObjects = JSON.parse(markupObjectsJSON);
-        
         
         //Start looping through the markup objects (and every data object with them)
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
@@ -59,6 +60,10 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
             //(for every passed data object).
             let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
             errTemplateName = templateObject.name;
+            if(markupObjects[markupIter].data.length === 0) //If no data given, just run once with an empty data object
+            {
+                markupObjects[markupIter].data = [{}];
+            }
             
             for(let dataIter = 0; dataIter < markupObjects[markupIter].data.length; dataIter++)
             {
@@ -83,7 +88,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                 //and resolve them.
                 let braceIndex;
                 let objectLength;
-                while(braceIndex = thisIterationResultText.indexOf("{{") > -1)
+                while((braceIndex = thisIterationResultText.indexOf("{{")) > -1)
                 {
                     errPreText = "Encountered a problem parsing call to embedded template: ";
                     
@@ -96,10 +101,10 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                     {
                         // Bear in mind we don't want to include the outer braces (it's currently 
                         //double braces, and we want single)
-                        let innerMarkupObject = JSON.parse(thisIterationResultText.substr(braceIndex + 1, objectLength - 2))
+                        let innerMarkupObject = JSON.parse(thisIterationResultText.substr(braceIndex + 1, objectLength - 2));
                         
                         //merge this with the current data object
-                        let mergedDataObject = { data: [] };
+                        let mergedDataObject = { template: innerMarkupObject.template, data: [] };
                         for(let i = 0; i < innerMarkupObject.data.length; i++)
                         {
                             mergedDataObject.data[i] = mergeObjects([
@@ -108,9 +113,10 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                             ]);
                         }
                         
-                        [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
-                            mergedDataObject,
-                            templateObjectsJSON
+                        let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
+                            [JSON.stringify(mergedDataObject)],
+                            templateObjectsJSON,
+                            true
                         );
                         
                         if(embeddedTemplateResultIsError)
@@ -122,7 +128,11 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                         }
                         else
                         {
-                            thisIterationResultText += embeddedTemplateResultText;
+                            // Replace the template call with its result
+                            thisIterationResultText = 
+                                thisIterationResultText.substring(0, braceIndex) + 
+                                embeddedTemplateResultText +
+                                thisIterationResultText.substring(braceIndex + objectLength);
                         }
                     }
                 }
@@ -143,7 +153,8 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     
     
     //Now, finally, change any @ohb and @chd in the template into single braces
-    if(!resultIsError)
+    //(If this is not an inner template call)
+    if(!resultIsError && !isInnerTemplate)
     {
         resultText = replaceSubstrings(resultText, [
             { from: "@ohb", to: "{" },
