@@ -131,6 +131,40 @@ test("scriptKnapperMain will embed the results of a template call within an inne
 
 //-------------------------------------------------------------------------------------------
 
+test("scriptKnapperMain will return an error if the given markup or template JSON isn't valid", () => {
+    
+    const markupObjects1 = "fksdjfkdjfksjfkdjfklsjf";
+    const templateObjects1 = templateObjects;
+    
+    
+    const markup2 = {
+        template: "simpleTemplate",
+        data: [
+            { 
+                data1: "theData1", 
+                data2: "theData2",
+                data3: "theData3" 
+            },
+        ]
+    };
+    
+    const markupObjects2 = JSON.stringify([
+        markup2
+    ]);
+    
+    const templateObjects2 = "khdjashkjahsdkjashd";
+    
+    const [resultError1, resultText1] = scriptKnapperMain(markupObjects1, templateObjects1);
+    const [resultError2, resultText2] = scriptKnapperMain(markupObjects2, templateObjects2);
+    
+    expect(typeof resultError1).toBe("boolean");
+    expect(typeof resultText1).toBe("string");
+    expect(typeof resultError2).toBe("boolean");
+    expect(typeof resultText2).toBe("string");
+    
+    expect(resultError1).toBeTruthy();
+    expect(resultError2).toBeTruthy();
+});
 
 test("scriptKnapperMain will return an error if the given data object is not an array", () => {
     

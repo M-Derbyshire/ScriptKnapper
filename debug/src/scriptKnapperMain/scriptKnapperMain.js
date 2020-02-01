@@ -8,7 +8,7 @@ import findObjectStringLength from './../findObjectStringLength/findObjectString
     Inputs:
         - markupObjectsJSON: This is the JSON with the data to be
                     entered into the template.
-        - templateObjectJSON: This is the JSON which is used when
+        - templateObjectsJSON: This is the JSON which is used when
                     generating errors.
             
     Output:
@@ -25,6 +25,25 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
 {
     let resultIsError = false;
     let resultText = "";
+    let errPreText; //The first part of the string to feed into prepareErrorMessage()
+    
+    // Try to parse the JSON data into objects
+    let markupObjects, templateObjects;
+    try
+    {
+        errPreText = "Encountered a problem parsing the provided markup JSON: ";
+        markupObjects = JSON.parse(markupObjectsJSON);
+        
+        errPreText = "Encountered a problem parsing the provided template JSON: ";
+        templateObjects = JSON.parse(templateObjectsJSON);
+    }
+    catch(err)
+    {
+        return [
+            true,
+            prepareErrorMessage(errPreText + err)
+        ];
+    }
     
     
     
