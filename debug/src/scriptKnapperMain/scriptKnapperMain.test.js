@@ -168,7 +168,7 @@ test("scriptKnapperMain will return an error if the given markup or template JSO
 
 test("scriptKnapperMain will return an error if the given data object is not an array", () => {
     
-    const templateName = "nonexistentTemplate";
+    const templateName = "simpleTemplate";
     
     const markup = {
         template: templateName,

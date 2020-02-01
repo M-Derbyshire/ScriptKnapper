@@ -26,16 +26,48 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     let resultIsError = false;
     let resultText = "";
     let errPreText; //The first part of the string to feed into prepareErrorMessage()
+    let template; //The template that is currently being used.
     
-    // Try to parse the JSON data into objects
+    // Try to parse the JSON data into objects, and make sure everything is correct
     let markupObjects, templateObjects;
     try
     {
+        errPreText = "Encountered a problem parsing the provided template JSON: ";
+        templateObjects = JSON.parse(templateObjectsJSON);
+        
         errPreText = "Encountered a problem parsing the provided markup JSON: ";
         markupObjects = JSON.parse(markupObjectsJSON);
         
-        errPreText = "Encountered a problem parsing the provided template JSON: ";
-        templateObjects = JSON.parse(templateObjectsJSON);
+        
+        
+        //!!!!! main loops down here !!!!!!!!!!!
+        for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
+        {
+            errPreText = "Encountered a problem parsing the provided markup JSON: ";
+            
+            // Firstly, get the template string, or deal with the called template not existing
+            let templateText;
+            let templateName = markupObjects[markupIter].template;
+            let templatesMatchingName = templateObjects.filter(template => (template.name === templateName));
+            if(templatesMatchingName.length === 0)
+            {
+                throw "The given template name (" + templateName + ") is not recognised.";
+            }
+            else if (templatesMatchingName.length > 1)
+            {
+                throw "The given template name (" + templateName + ") has more than one match.";
+            }
+            else
+            {
+                templateText = templatesMatchingName[0].template;
+            }
+            
+            //Next, is the data property an array?
+            if(!Array.isArray(markupObjects[markupIter].data))
+            {
+                throw "The provided data to the " + markupObjects[markupIter].template + " template is not in an array.";
+            }
+        }
     }
     catch(err)
     {
@@ -44,9 +76,6 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
             prepareErrorMessage(errPreText + err)
         ];
     }
-    
-    
-    
     
     return [resultIsError, resultText];
 }
@@ -118,26 +147,7 @@ function codeToBeUsedMaybe()
 
     // ----------------------------------------------------------------------------------
 
-    // Firstly, get the template object, or deal with the templateName being incorrect
-    let templatesMatchingName = templateObjects.filter(template => (template.name === templateName));
-    if(templatesMatchingName.length === 0)
-    {
-        return [
-            true,
-            prepareErrorMessage(
-                    "The given template name (" + templateName + ") is not recognised."
-                )
-        ];
-    }
-    else if (templatesMatchingName.length > 1)
-    {
-        return [
-            true,
-            prepareErrorMessage(
-                    "The given template name (" + templateName + ") has more than one match."
-                )
-        ];
-    }
+    
 
     // --------------------------------------------------------------------------------------
 
