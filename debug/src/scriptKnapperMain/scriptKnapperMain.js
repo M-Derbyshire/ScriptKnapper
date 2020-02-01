@@ -96,8 +96,20 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                     {
                         // Bear in mind we don't want to include the outer braces (it's currently 
                         //double braces, and we want single)
+                        let innerMarkupObject = JSON.parse(thisIterationResultText.substr(braceIndex + 1, objectLength - 2))
+                        
+                        //merge this with the current data object
+                        let mergedDataObject = { data: [] };
+                        for(let i = 0; i < innerMarkupObject.data.length; i++)
+                        {
+                            mergedDataObject.data[i] = mergeObjects([
+                                innerMarkupObject.data[i], 
+                                markupObjects[markupIter].data[dataIter]
+                            ]);
+                        }
+                        
                         [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
-                            thisIterationResultText.substr(braceIndex + 1, objectLength - 2),
+                            mergedDataObject,
                             templateObjectsJSON
                         );
                         
@@ -143,69 +155,3 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
 }
 
 export default scriptKnapperMain;
-
-
-
-
-
-
-
-
-
-
-function codeToBeUsedMaybe()
-{
-    //------------- Is this a double brace? If so, we need to parse to an object and pass that ---------
-    //------------- to the dataHandlerFunc.
-
-    if((resultText.length - 1 > braceIndex) && (resultText.charAt(braceIndex + 1) === "{"))
-    {
-        errPreText = "ScriptKnapper encountered an issue when attempting to resolve a template call within another template: ";
-        
-        objectLength = findObjectStringLength(resultText.substring(braceIndex));
-        if(objectLength === -1)
-        {
-            throw "Encountered an incomplete or incorrectly shaped object.";
-        }
-        
-        //The object is within a second pair of braces, so we don't want to include those.
-        let innerDataObject = JSON.parse([resultText.substr(braceIndex + 1, objectLength - 2)]);
-        
-        //We want to pass any data in this template down so the inner template can access it.
-        //But, if the data for the inner template already contains a property with the same name as a
-        //property in the current template's data, then leave the inner template's data intact -- don't 
-        //replace it.
-        let mergedDataObject = [];
-        for(let i = 0; i < innerDataObject.data.length; i++)
-        {
-            mergedDataObject[i] = mergeObjects([innerDataObject.data[i], dataObject]);
-        }
-        
-        [innerResultError, newTextSegment] = dataHandlerFunc([
-            {
-                template: innerDataObject.template,
-                data: mergedDataObject
-            }
-        ], templateObjects, true);
-        
-        if(innerResultError)
-        {
-            throw newTextSegment; //This will contain the error here.
-        }
-    }
-    // ---------------------------------------------------------------------------------
-
-
-
-    
-
-
-    // ----------------------------------------------------------------------------------
-
-    
-
-    // --------------------------------------------------------------------------------------
-
-
-
-}
