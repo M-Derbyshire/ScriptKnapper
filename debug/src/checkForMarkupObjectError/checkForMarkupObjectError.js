@@ -20,8 +20,11 @@ function checkForMarkupObjectError(markupObject, templateObjects)
     
     try
     {
-        // Firstly, get the template string, or deal with the called template not existing
-        let templateText;
+        // Does the markupObject have both a "data" and "template" property?
+        if(!markupObject.hasOwnProperty("data")) { throw "The given template call has not been given a data property."; }
+        if(!markupObject.hasOwnProperty("template")) { throw "The given template call has not been given a template property."; }
+        
+        // If the called template doesn't exist, or if we have more then one of them
         let templateName = markupObject.template;
         let templatesMatchingName = templateObjects.filter(template => (template.name === templateName));
         if(templatesMatchingName.length === 0)

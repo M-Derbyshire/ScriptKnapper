@@ -320,7 +320,7 @@ test("scriptKnapperMain will not return { or } in its string if @ohb/@chb haven'
     expect(resultText).not.toContain("}");
 });
 
-test("scriptKnapperMain replace any @ohb/@chb in the template or data with open/closing handlebars", () => {
+test("scriptKnapperMain will replace any @ohb/@chb in the template or data with open/closing handlebars", () => {
     
     const templateName = "simpleTemplate";
     

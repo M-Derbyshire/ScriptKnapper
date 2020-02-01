@@ -57,7 +57,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
             
             //Populate the template with the provided data, and add to the result
             //(for every passed data object).
-            let templateObject = templateObjects.filter(template => (template.name === templateName))[0];
+            let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
             errTemplateName = templateObject.name;
             
             for(let dataIter = 0; dataIter < markupObjects[markupIter].data.length; dataIter++)
