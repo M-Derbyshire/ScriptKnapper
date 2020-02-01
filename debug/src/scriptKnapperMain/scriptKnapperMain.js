@@ -29,7 +29,6 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     let errPreText; //The first part of the string to feed into prepareErrorMessage()
     let errTemplateName = ""; //The current template name to feed into prepareErrorMessage()
     let errDataJSON = ""; // the current data object, in string form, to feed into prepareErrorMessage()
-    let template; //The template that is currently being used.
     
     // Try to parse the JSON data into objects, and make sure everything is correct
     let markupObjects, templateObjects;
