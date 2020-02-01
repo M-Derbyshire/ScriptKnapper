@@ -220,44 +220,23 @@ test("scriptKnapperMain will return an error if a given embedded template reques
     expect(resultError).toBeTruthy();
 });
 
-test("scriptKnapperMain will return an error if a given embedded template request object doesn't have the right properties", () => {
+test("scriptKnapperMain will return an error caught by the checkForMarkupObjectError function", () => {
     
     const templateName = "simpleTemplate";
     
     //No data
-    const markup1 = {
+    const markup = {
         template: templateName
     };
     
-    // No template
-    const markup2 = {
-        data: [
-            { 
-                data1: "theData1", 
-                data2: "testTemplate: {{ sjdhfsjdhfkjsdhf }} - This is now the string again. ",
-                data3: "theData3" 
-            }
-        ]
-    };
+    const markupObjects = JSON.stringify([markup]);
     
-    const markupObjects1 = JSON.stringify([
-        markup1
-    ]);
+    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
     
-    const markupObjects2 = JSON.stringify([
-        markup2
-    ]);
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
     
-    const [resultError1, resultText1] = scriptKnapperMain(markupObjects1, templateObjects);
-    const [resultError2, resultText2] = scriptKnapperMain(markupObjects2, templateObjects);
-    
-    expect(typeof resultError1).toBe("boolean");
-    expect(typeof resultText1).toBe("string");
-    expect(typeof resultError2).toBe("boolean");
-    expect(typeof resultText2).toBe("string");
-    
-    expect(resultError1).toBeTruthy();
-    expect(resultError2).toBeTruthy();
+    expect(resultError).toBeTruthy();
 });
 
 // --------------------------------------------------------------------------------------
