@@ -1,23 +1,14 @@
 import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
 import findObjectStringLength from './../findObjectStringLength/findObjectStringLength';
-import replaceSubstrings from './../replaceSubstrings/replaceSubstrings';
-import mergeObjects from './../mergeObjects/mergeObjects';
 
 /*
     Inputs:
         - dataObject: This is the object with the data to be
                     entered into the template.
-        - templateName: This is the name of the template to
-                    use.
-        - templateObjects: The function requires the full 
-                    list of templates, as it may need to pass 
-                    more data to another template, within the 
-                    current one.
-        - dataHandlerFunc: This is the function that handles
-                    the full array of data. It felt best to
-                    pass this here for the sake of decoupling.
-                    I didn't just want to call the function,
-                    without it being passed in.
+        - templateName: This is string, which is used when
+                    generating errors.
+        - template: This is a string, which is the template 
+                    to use.
             
     Output:
         - This function will return an array with 2 values,
@@ -30,107 +21,54 @@ import mergeObjects from './../mergeObjects/mergeObjects';
             problem populating the tmplate.
 */
 
-function populateTemplate(dataObject, templateName, templateObjects, dataHandlerFunc)
+function populateTemplate(dataObject, templateName, template)
 {
-    // Firstly, get the template object, or deal with the templateName being incorrect
-    let templatesMatchingName = templateObjects.filter(template => (template.name === templateName));
-    if(templatesMatchingName.length === 0)
-    {
-        return [
-            true,
-            prepareErrorMessage(
-                    "The given template name (" + templateName + ") is not recognised."
-                )
-        ];
-    }
-    else if (templatesMatchingName.length > 1)
-    {
-        return [
-            true,
-            prepareErrorMessage(
-                    "The given template name (" + templateName + ") has more than one match."
-                )
-        ];
-    }
-    
-    
-    let resultText = templatesMatchingName[0].template;
+    let resultText = template;
     let resultIsError = false;
     let errPreText; //The first part of the string to feed into prepareErrorMessage()
-    let braceIndex; //The index of the first brace in the string that is being searched 
+    let braceIndex; //The index of the first brace in the substring that is being searched 
                     //for braces
-    let objectLength; //Length of the object string that is being worked with
-    let propertyName; //The name of the dataObject property that will replace property call
-    let innerResultError = false; // The error esult of a call to another template
-    let newTextSegment; // The text that will replace a property/template call
+    let searchStartIndex = 0; //The index to start the search from (this is moved after every
+                              //replacement, to stop the function trying to resolve templates
+                              //that are fed into this template).
     
-    while ((braceIndex = resultText.indexOf("{")) > -1)
+    //Go through the template, looking for things to replace, and determine what 
+    //property from the dataObject to replace them with.
+    while (resultText.substring(searchStartIndex).includes("{"))
     {
-        //Go through the template, looking for things to replace, and determine what 
-        //property from the dataObject to replace them with. If there are double braces
-        //("{{"), then this is another template; if it is just single braces, then the
-        //text between the braces will be the key for the property in the dataObject.
+        //This will find the index of the brace in the context of the whole template string, but
+        //it will ignore any braces before before the searchStartIndex
+        braceIndex = searchStartIndex + resultText.substring(searchStartIndex).indexOf("{");
         
         try
         {
-            //------------- Is this a double brace? If so, we need to parse to an object and pass that ---------
-            //------------- to the dataHandlerFunc.
+            errPreText = "ScriptKnapper encountered an issue when attempting to resolve a call to the requested data: ";
             
-            errPreText = "ScriptKnapper encountered an issue when attempting to resolve a template call within another template: ";
+            //If this is surrounded by single braces, then this should be a property in the 
+            //dataObject. If by double braces, then this is a template call, and we need to
+            //move the searchStartIndex to the index after this, and then move on.
             
-            if((resultText.length - 1 > braceIndex) && (resultText.charAt(braceIndex + 1) === "{"))
+            if(resultText.charAt(braceIndex + 1) === "{") //Is this a double brace (template call)?
             {
-                objectLength = findObjectStringLength(resultText.substring(braceIndex));
-                if(objectLength === -1)
-                {
-                    throw "Encountered an incomplete or incorrectly shaped object.";
-                }
-                
-                //The object is within a second pair of braces, so we don't want to include those.
-                let innerDataObject = JSON.parse([resultText.substr(braceIndex + 1, objectLength - 2)]);
-                
-                //We want to pass any data in this template down so the inner template can access it.
-                //But, if the data for the inner template already contains a property with the same name as a
-                //property in the current template's data, then leave the inner template's data intact -- don't 
-                //replace it.
-                let mergedDataObject = [];
-                for(let i = 0; i < innerDataObject.data.length; i++)
-                {
-                    mergedDataObject[i] = mergeObjects([innerDataObject.data[i], dataObject]);
-                }
-                console.log(mergedDataObject);
-                [innerResultError, newTextSegment] = dataHandlerFunc([
-                    {
-                        template: innerDataObject.template,
-                        data: mergedDataObject
-                    }
-                ], templateObjects, true);
-                
-                if(innerResultError)
-                {
-                    throw newTextSegment; //This will contain the error here.
-                }
+                searchStartIndex += braceIndex + findObjectStringLength(resultText.substring(braceIndex));
             }
             else
             {
-                //----------------- If this is surrounded by single braces, then this should be a property in the 
-                //------------------dataObject 
+                let objectLength = findObjectStringLength(resultText.substring(braceIndex));
                 
-                errPreText = "ScriptKnapper encountered an issue when attempting to resolve a call to the requested data: ";
-                
-                objectLength = findObjectStringLength(resultText.substring(braceIndex));
                 if(objectLength === -1)
                 {
                     throw "Encountered an incomplete call to a data property.";
                 }
                 
-                propertyName = resultText.substring(braceIndex + 1, braceIndex + objectLength - 1).trim();
+                let propertyName = resultText.substring(braceIndex + 1, braceIndex + objectLength - 1).trim();
                 
                 if(dataObject.hasOwnProperty(propertyName))
                 {
                     if(typeof dataObject[propertyName] === "string")
                     {
-                        newTextSegment = dataObject[propertyName];
+                        // Now replace the substring with the property's value
+                        resultText = resultText.substring(0, braceIndex) + dataObject[propertyName] + resultText.substring(braceIndex + objectLength);
                     }
                     else
                     {
@@ -145,30 +83,10 @@ function populateTemplate(dataObject, templateName, templateObjects, dataHandler
         }
         catch(err)
         {
-            if(!innerResultError)
-            {
-                resultText = prepareErrorMessage(errPreText + err, templateName, JSON.stringify(dataObject));
-            }
-            else
-            {
-                resultText = err;
-            }
-            
+            resultText = prepareErrorMessage(errPreText + err, templateName, JSON.stringify(dataObject));
             resultIsError = true;
             break;
         }
-        
-        // Now replace the substring with the property/template value
-        resultText = resultText.substring(0, braceIndex) + newTextSegment + resultText.substring(braceIndex + objectLength);
-    }
-    
-    //Now, change any @ohb and @chd in the template into single braces
-    if(!resultIsError)
-    {
-        resultText = replaceSubstrings(resultText, [
-            { from: "@ohb", to: "{" },
-            { from: "@chb", to: "}" }
-        ]);
     }
     
     return [resultIsError, resultText];
