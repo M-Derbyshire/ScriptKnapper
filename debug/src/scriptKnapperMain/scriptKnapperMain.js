@@ -114,7 +114,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                         }
                         
                         let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
-                            [JSON.stringify(mergedDataObject)],
+                            JSON.stringify([mergedDataObject]),
                             templateObjectsJSON,
                             true
                         );

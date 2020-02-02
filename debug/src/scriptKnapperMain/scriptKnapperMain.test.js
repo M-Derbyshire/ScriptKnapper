@@ -78,7 +78,7 @@ test("scriptKnapperMain will embed the results of another template into the resu
         data: [
             { 
                 data1: "theData1", 
-                data2: 'testTemplate: {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] }} - This is now the string again. ', 
+                data2: 'testTemplate: {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] }} - This is now the string again. ',
                 data3: "theData3" 
             },
         ]
@@ -107,22 +107,19 @@ test("scriptKnapperMain will embed the results of a template call within a prope
         data: [
             { 
                 data1: "theData1", 
-                data2: '{{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "embedLayer3Data" }] }}',
+                data2: '{{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{embedLayer3Data}" }] }}',
                 data3: "theData3",
                 embedLayer3Data: '"embedLayer3Data": "{{ "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] }}"'
             },
         ]
     };
     
-    //Data 2 originally:
-    //'hello {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{{ "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] }}" }] }}'
-    
     const markupObjects = JSON.stringify([
         markup
     ]);
     
     const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    console.log(resultText);
+    
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
     
@@ -270,7 +267,7 @@ test("scriptKnapperMain will insert data that has been passed down from another 
     expect(typeof resultText).toBe("string");
     
     expect(resultError).toBeFalsy();
-    expect(resultText).toContain("hello, testData3");
+    expect(resultText).toContain("hello, theData3");
 });
 
 
