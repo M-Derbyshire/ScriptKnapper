@@ -11,7 +11,7 @@ import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMa
                     entered into the template.
         - templateObjectsJSON: This is the JSON which is used when
                     generating errors.
-        - isInnerTemplate: A boolean value. Is this call for an
+        - isInnerTemplate: A boolean value. Is this call for a
                     template within a template?
             
     Output:
