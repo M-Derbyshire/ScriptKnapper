@@ -13,8 +13,11 @@ h2 {
     display: flex;
 }
 
-.textAreaContainer {
+.scriptTextAreaContainer {
     flex: 1 1 33%;
+}
+
+.textAreaContainer {
     flex-wrap: wrap;
     padding: 0.5em;
     margin: 5px;
@@ -35,5 +38,10 @@ h2 {
 
 .buttonContainer button {
     font-size: 2em;
-    
+}
+
+footer {
+    border: 1px solid #6EC8FF;
+    padding: 0.5em;
+    width: fit-content;
 }
