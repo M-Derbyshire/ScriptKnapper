@@ -17,7 +17,6 @@ function transpileClickAction()
     let successColor = "#00FF00";
     
     //Now set the output text and background color
-    console.log(JSON.parse(templateInput.value));
     let [resultIsError, resultText] = skMain(markupInput.value, templateInput.value);
     
     scriptOutput.value = resultText;
