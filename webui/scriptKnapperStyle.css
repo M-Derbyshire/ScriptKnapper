@@ -33,7 +33,7 @@ h2 {
 
 .buttonContainer {
     margin: 5px;
-    float: right;
+    text-align: right;
 }
 
 .buttonContainer button {
