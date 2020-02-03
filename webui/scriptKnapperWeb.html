@@ -52,23 +52,23 @@
                     <h2>Prepare a String</h2>
                     <p class="toolDescription">
                         Enter a string to manipulate. You can then remove tabs and line breaks (whitespace), 
-                        or replace them with spaces or \t, \n, etc; add escape characters to quotation marks; 
+                        or replace them with spaces or \t, \n, etc. You can also escape quotation marks, and 
                         replace handlebar braces with @ohb and @chb.
                     </p>
                     <form id="prepareStringOptionsForm" class="textAreaContainer">
                         <ul>
                             <li>
-                                1. <select name="prepareStringWhitespaceDropdown">
+                                1. <select name="prepareStringWhitespaceDropdown" id="prepareStringWhitespaceDropdown">
                                     <option value="none">No change to whitespace</option>
                                     <option value="spaceReplace">Replace whitespace with spaces</option>
                                     <option value="escapeCodeReplace">Replace whitespace with escape codes</option>
                                 </select>
                             </li>
                             <li>
-                                2. <input type="checkbox" name="prepareStringEscapeDoubleQuotes" /> Escape double quotes
+                                2. <input type="checkbox" name="prepareStringEscapeDoubleQuotes" id="prepareStringEscapeDoubleQuotes" /> Escape double quotes
                             </li>
                             <li>
-                                3. <input type="checkbox" name="prepareStringReplaceHandlebars" /> Replace handlebar braces
+                                3. <input type="checkbox" name="prepareStringReplaceHandlebars" id="prepareStringReplaceHandlebars" /> Replace handlebar braces
                             </li>
                         </ul>
                     </form>
@@ -90,14 +90,14 @@
                 </div>
                 
                 <div class="buttonContainer">
-                    <button id="stringPreparationButton" onClick="">Prepare String</button>
+                    <button id="stringPreparationButton" onClick="prepareStringClickAction()">Prepare String</button>
                 </div>
             </div>
         </main>
         
         <footer>
-            ScriptKnapper: developed by Matthew Stuart Derbyshire.
-            ScriptKnapper web UI: version 1.0.
+            ScriptKnapper: Developed by Matthew Stuart Derbyshire.
+            ScriptKnapper Web UI: Version 1.0.
         </footer>
     </body>
 </html>
