@@ -12,13 +12,14 @@
     <body>
         <header>
             <h1>ScriptKnapper Web UI</h1>
-            <p id="appDescription">
+            <p class="toolDescription">
                 Enter the template JSON, and the markup JSON, and then select Transpile to generate your script.
             </p>
         </header>
         
         <main>
-            <div class="container">
+            <!-- The main ScriptKnapper transpilation tool -->
+            <div class="container" id="mainToolContainer">
                 
                 <div class="textAreaContainer scriptTextAreaContainer" id="scriptTemplateContainer">
                     <h2>
@@ -43,6 +44,54 @@
             </div>
             <div class="buttonContainer">
                 <button id="transpileButton" onClick="transpileClickAction()">Transpile</button>
+            </div>
+            
+            <!-- The string preparation tool. -->
+            <div class="extraToolContainer">
+                <div class="extraToolHead">
+                    <h2>Prepare a String</h2>
+                    <p class="toolDescription">
+                        Enter a string to manipulate. You can then remove tabs and line breaks (whitespace), 
+                        or replace them with spaces or \t, \n, etc; add escape characters to quotation marks; 
+                        replace handlebar braces with @ohb and @chb.
+                    </p>
+                    <form id="prepareStringOptionsForm" class="textAreaContainer">
+                        <ul>
+                            <li>
+                                1. <select name="prepareStringWhitespaceDropdown">
+                                    <option value="none">No change to whitespace</option>
+                                    <option value="spaceReplace">Replace whitespace with spaces</option>
+                                    <option value="escapeCodeReplace">Replace whitespace with escape codes</option>
+                                </select>
+                            </li>
+                            <li>
+                                2. <input type="checkbox" name="prepareStringEscapeDoubleQuotes" /> Escape double quotes
+                            </li>
+                            <li>
+                                3. <input type="checkbox" name="prepareStringReplaceHandlebars" /> Replace handlebar braces
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+                <div class="container">
+                        <div class="textAreaContainer scriptTextAreaContainer" id="prepareStringInputContainer">
+                            <h2>
+                                Input String
+                            </h2>
+                            <textarea id="prepareStringInput" rows="28"></textarea>
+                        </div>
+                        
+                        <div class="textAreaContainer scriptTextAreaContainer" id="prepareStringOuputContainer">
+                            <h2>
+                                Prepared String
+                            </h2>
+                            <textarea id="prepareStringOutput" rows="28"></textarea>
+                        </div>
+                </div>
+                
+                <div class="buttonContainer">
+                    <button id="stringPreparationButton" onClick="">Prepare String</button>
+                </div>
             </div>
         </main>
         

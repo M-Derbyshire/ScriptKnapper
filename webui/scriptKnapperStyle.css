@@ -32,7 +32,7 @@ h2 {
 }
 
 .buttonContainer {
-    margin: 5px;
+    margin: 5px 5px 1em 5px;
     text-align: right;
 }
 
@@ -40,8 +40,27 @@ h2 {
     font-size: 2em;
 }
 
-footer {
-    border: 1px solid #6EC8FF;
+.extraToolContainer {
+    border: solid 2px rgb(0, 109, 177);
     padding: 0.5em;
+    margin: 0.25em;
+}
+
+#prepareStringOptionsForm ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#prepareStringOptionsForm li {
+    display: inline-block;
+    padding: 0.5em;
+    margin: 0.5em;
+}
+
+footer {
+    border: 1px solid rgb(0, 109, 177);
+    padding: 0.5em;
+    margin: 1em 0.25em;
     width: fit-content;
 }
