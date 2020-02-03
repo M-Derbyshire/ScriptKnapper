@@ -1,10 +1,10 @@
 // The onClick method for the transpile button.
 // This will call the necessary function in the function
-// library, clear the template and markup textareas, and
-// then put the generated script into the output textarea.
+// library, then put the generated script into the output
+// textarea.
 function transpileClickAction()
 {
-    let skMain = scriptKnapperMain;
+    let skMain = scriptKnapperMain; //In the scriptKnapperMain library
     
     let templateInput = document.getElementById("templateInput");
     let markupInput = document.getElementById("markupInput");
@@ -22,3 +22,4 @@ function transpileClickAction()
     scriptOutput.value = resultText;
     scriptResultContainer.style.backgroundColor = (resultIsError) ? errorColor : successColor;
 }
+
