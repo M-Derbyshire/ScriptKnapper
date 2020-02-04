@@ -41,6 +41,16 @@ function prepareStringClickAction()
     let replacementOptions = [];
     
     //Add options to be given to the skReplaceSubStrings function
+    if(whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value === "removeReplace")
+    {
+        replacementOptions.push(
+            { from: "\t", to: "" },
+            { from: "\v", to: "" },
+            { from: "\r", to: "" },
+            { from: "\n", to: "" },
+        );
+    }
+    
     if(whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value === "spaceReplace")
     {
         replacementOptions.push(
