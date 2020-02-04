@@ -19,16 +19,19 @@ h2 {
 
 .textAreaContainer {
     flex-wrap: wrap;
-    padding: 0.5em;
     margin: 5px;
     background-color: #cccccc;
     border: 1px solid black;
+    padding: 0.5em;
+    height: fit-content;
 }
 
 .textAreaContainer textarea {
     resize: none; /* This will disable the resize grabber */
+    display: block;
     height: 100%;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .buttonContainer {
