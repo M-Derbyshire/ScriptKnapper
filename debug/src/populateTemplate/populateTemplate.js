@@ -29,15 +29,15 @@ function populateTemplate(dataObject, templateName, template)
     let braceIndex; //The index of the first brace in the substring that is being searched 
                     //for braces
     let searchStartIndex = 0; //The index to start the search from (this is moved after every
-                              //replacement, to stop the function trying to resolve templates
-                              //that are fed into this template).
+                              //template replacement, to stop the function trying to resolve 
+                              //templates that are fed into this template).
     
     //Go through the template, looking for things to replace, and determine what 
     //property from the dataObject to replace them with.
     while (resultText.substring(searchStartIndex).includes("{"))
     {
         //This will find the index of the brace in the context of the whole template string, but
-        //it will ignore any braces before before the searchStartIndex
+        //it will ignore any braces before the searchStartIndex
         braceIndex = searchStartIndex + resultText.substring(searchStartIndex).indexOf("{");
         
         try
@@ -47,7 +47,6 @@ function populateTemplate(dataObject, templateName, template)
             //If this is surrounded by single braces, then this should be a property in the 
             //dataObject. If by double braces, then this is a template call, and we need to
             //move the searchStartIndex to the index after this, and then move on.
-            
             if(resultText.charAt(braceIndex + 1) === "{") //Is this a double brace (template call)?
             {
                 searchStartIndex += braceIndex + findObjectStringLength(resultText.substring(braceIndex));
@@ -61,6 +60,7 @@ function populateTemplate(dataObject, templateName, template)
                     throw "Encountered an incomplete call to a data property.";
                 }
                 
+                //We want to get the property name, but ignore any whitespace around it
                 let propertyName = resultText.substring(braceIndex + 1, braceIndex + objectLength - 1).trim();
                 
                 if(dataObject.hasOwnProperty(propertyName))

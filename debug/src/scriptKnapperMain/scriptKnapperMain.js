@@ -43,6 +43,10 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
         markupObjects = JSON.parse(markupObjectsJSON);
         
         //Start looping through the markup objects (and every data object with them)
+        //Each markup object contains a template name, and an array of data objects
+        //(which are the data to feed into the templates). Each data object is actually
+        //another call to the template, so multiple data objects generate multiple
+        //versions of the template.
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
             // If there is an issue with this markup object, return the error
@@ -99,7 +103,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                     }
                     else
                     {
-                        // Bear in mind we don't want to include the outer braces (it's currently 
+                        // Bear in mind we don't want to include the first outer braces (it's currently 
                         //double braces, and we want single)
                         let innerMarkupObject = JSON.parse(thisIterationResultText.substr(braceIndex + 1, objectLength - 2));
                         
