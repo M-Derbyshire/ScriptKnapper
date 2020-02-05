@@ -1,6 +1,6 @@
 body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: #4CA6FF;
+    background-color: rgb(215, 236, 255);
     color: #0E134C;
 }
 
@@ -20,7 +20,7 @@ h2 {
 .textAreaContainer {
     flex-wrap: wrap;
     margin: 5px;
-    background-color: #cccccc;
+    background-color: #d3d3d3;
     border: 1px solid black;
     padding: 0.5em;
     height: fit-content;
