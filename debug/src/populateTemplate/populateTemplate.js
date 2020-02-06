@@ -47,13 +47,23 @@ function populateTemplate(dataObject, templateName, template)
             //If this is surrounded by single braces, then this should be a property in the 
             //dataObject. If by double braces, then this is a template call, and we need to
             //move the searchStartIndex to the index after this, and then move on.
+            let objectLength;
             if(resultText.charAt(braceIndex + 1) === "{") //Is this a double brace (template call)?
             {
-                searchStartIndex += braceIndex + findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                
+                if(objectLength === -1)
+                {
+                    throw "Encountered an incorrectly formatted call to a template.";
+                }
+                else
+                {
+                    searchStartIndex = braceIndex + objectLength;
+                }
             }
             else
             {
-                let objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex));
                 
                 if(objectLength === -1)
                 {
