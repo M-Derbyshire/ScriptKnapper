@@ -15,12 +15,15 @@ function transpileClickAction()
     //to (depending on whether or not an error was returned).
     let errorColor = "#FF0000";
     let successColor = "#00FF00";
+    let darkTextColor = "#0C114A"; // Text colour to be used in result container
+                                    //because the background becomes darker.
     
     //Now set the output text and background color
     let [resultIsError, resultText] = skMain(markupInput.value, templateInput.value);
     
     scriptOutput.value = resultText;
     scriptResultContainer.style.backgroundColor = (resultIsError) ? errorColor : successColor;
+    scriptResultContainer.style.color = darkTextColor;
 }
 
 // The onClick method for the Prepare a String tool's button.
