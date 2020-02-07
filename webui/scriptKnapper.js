@@ -1,8 +1,12 @@
 /*
-    ScriptKnapper: Build 1.0.
+    ScriptKnapper: Build 1.1.
     
     The entry point for UIs to use is scriptKnapperMain(). See the comments for
     this function below to understand what it needs, and what will be returned.
+    
+    Changes in this build:
+    - Fixed bug that was causing some parameters to not be resolved if more
+        than one template call followed it.
 */
 
 // scriptKnapperMain ---------------------------------------------------------------------
@@ -45,6 +49,10 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
         markupObjects = JSON.parse(markupObjectsJSON);
         
         //Start looping through the markup objects (and every data object with them)
+        //Each markup object contains a template name, and an array of data objects
+        //(which are the data to feed into the templates). Each data object is actually
+        //another call to the template, so multiple data objects generate multiple
+        //versions of the template.
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
             // If there is an issue with this markup object, return the error
@@ -101,7 +109,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                     }
                     else
                     {
-                        // Bear in mind we don't want to include the outer braces (it's currently 
+                        // Bear in mind we don't want to include the first outer braces (it's currently 
                         //double braces, and we want single)
                         let innerMarkupObject = JSON.parse(thisIterationResultText.substr(braceIndex + 1, objectLength - 2));
                         
@@ -197,15 +205,15 @@ function populateTemplate(dataObject, templateName, template)
     let braceIndex; //The index of the first brace in the substring that is being searched 
                     //for braces
     let searchStartIndex = 0; //The index to start the search from (this is moved after every
-                              //replacement, to stop the function trying to resolve templates
-                              //that are fed into this template).
+                              //template replacement, to stop the function trying to resolve 
+                              //templates that are fed into this template).
     
     //Go through the template, looking for things to replace, and determine what 
     //property from the dataObject to replace them with.
     while (resultText.substring(searchStartIndex).includes("{"))
     {
         //This will find the index of the brace in the context of the whole template string, but
-        //it will ignore any braces before before the searchStartIndex
+        //it will ignore any braces before the searchStartIndex
         braceIndex = searchStartIndex + resultText.substring(searchStartIndex).indexOf("{");
         
         try
@@ -215,20 +223,30 @@ function populateTemplate(dataObject, templateName, template)
             //If this is surrounded by single braces, then this should be a property in the 
             //dataObject. If by double braces, then this is a template call, and we need to
             //move the searchStartIndex to the index after this, and then move on.
-            
+            let objectLength;
             if(resultText.charAt(braceIndex + 1) === "{") //Is this a double brace (template call)?
             {
-                searchStartIndex += braceIndex + findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                
+                if(objectLength === -1)
+                {
+                    throw "Encountered an incorrectly formatted call to a template.";
+                }
+                else
+                {
+                    searchStartIndex = braceIndex + objectLength;
+                }
             }
             else
             {
-                let objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex));
                 
                 if(objectLength === -1)
                 {
                     throw "Encountered an incomplete call to a data property.";
                 }
                 
+                //We want to get the property name, but ignore any whitespace around it
                 let propertyName = resultText.substring(braceIndex + 1, braceIndex + objectLength - 1).trim();
                 
                 if(dataObject.hasOwnProperty(propertyName))
