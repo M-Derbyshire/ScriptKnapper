@@ -126,8 +126,6 @@ function buildTemplateJSONClickAction()
             + ","
             + outputJSON.substring(outputJSON.lastIndexOf("}") + 1)
             + "\n";
-            
-        console.log(outputJSON);
     }
     
     
