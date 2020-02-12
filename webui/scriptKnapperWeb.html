@@ -18,6 +18,10 @@
             </p>
         </header>
         
+        
+        
+        
+        
         <main>
             <!-- The main ScriptKnapper transpilation tool -->
             <div class="container" id="mainToolContainer">
@@ -46,6 +50,12 @@
             <div class="buttonContainer">
                 <button id="transpileButton" onClick="transpileClickAction()">Transpile</button>
             </div>
+            
+            
+            
+            
+            
+            
             
             <!-- The string preparation tool. -->
             <div class="extraToolContainer">
@@ -95,11 +105,52 @@
                     <button id="stringPreparationButton" onClick="prepareStringClickAction()">Prepare String</button>
                 </div>
             </div>
+            
+            
+            
+            
+            
+            <!-- The Template JSON Builder. -->
+            <div class="extraToolContainer">
+                <div class="extraToolHead">
+                    <h2>Build Template JSON</h2>
+                    <p class="toolDescription">
+                        Enter each individual template, and its name (without any changes to the whitespace, 
+                        or any escaped quotes within the inner-templates), and click the Add Template button. 
+                        This will add the template to an array in the JSON textbox.
+                    </p>
+                    
+                    <div class="container">
+                        <div class="textAreaContainer scriptTextAreaContainer" id="buildTemplateJSONInputContainer">
+                            <h2>
+                                Raw Template
+                            </h2>
+                            <input type="text" id="buildTemplateNameInput" value="Template Name" />
+                            <textarea id="buildTemplateJSONInput" rows="28"></textarea>
+                        </div>
+                        
+                        <div class="textAreaContainer scriptTextAreaContainer" id="buildTemplateJSONOuputContainer">
+                            <h2>
+                                JSON
+                            </h2>
+                            <textarea id="buildTemplateJSONOutput" rows="28"></textarea>
+                        </div>
+                </div>
+                
+                <div class="buttonContainer">
+                    <button id="buildTemplateJSONButton" onClick="buildTemplateJSONClickAction()">Add Template</button>
+                </div>
+            </div>
+            
+            
+            
+            
+            
         </main>
         
         <footer>
             ScriptKnapper: Developed by Matthew Stuart Derbyshire.
-            ScriptKnapper Web UI: Version 1.1.
+            ScriptKnapper Web UI: Version 1.2.
         </footer>
     </body>
 </html>
