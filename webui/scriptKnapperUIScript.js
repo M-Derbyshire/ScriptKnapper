@@ -26,6 +26,15 @@ function transpileClickAction()
     scriptResultContainer.style.color = darkTextColor;
 }
 
+
+
+
+
+
+
+
+
+
 // The onClick method for the Prepare a String tool's button.
 // This will use the replaceSubstrings function in the
 // library to make the requested changes to the provided
@@ -94,6 +103,12 @@ function prepareStringClickAction()
     stringOutput.value = skReplaceSubStrings(stringInput.value, replacementOptions);
 }
 
+
+
+
+
+
+
 // The onClick method for the Template JSON Builder's button.
 // This will change the template into a template object, and
 // add it to the array in the output textbox (the array will
@@ -129,41 +144,16 @@ function buildTemplateJSONClickAction()
     }
     
     
-    //We need to search through the string for inner template calls, and
-    //then escape all double-quotes within them. Then, we need to search
-    //through the rest of the string, after that template call.
-    let searchStartIndex = 0;
-    let bracesIndex;
-    let objectLength = 0;
-    let innerTemplateString;
     
-    while((bracesIndex = newTemplate.substring(searchStartIndex).indexOf("{{")) > -1)
-    {
-        //How long is the string for this object?
-        objectLength = skObjectStringLength(newTemplate.substring(bracesIndex));
-        
-        innerTemplateString = skReplaceSubStrings(
-            newTemplate.substring(bracesIndex, bracesIndex + objectLength),
-            [{ from: '"', to: String.raw`\"` }]
-        );
-        
-        //Replace the new inner-template call in the string
-        newTemplate = newTemplate.substring(0, bracesIndex)
-            + innerTemplateString
-            + newTemplate.substring(bracesIndex + objectLength);
-        
-        searchStartIndex = bracesIndex + objectLength; //Continue search from after this template call
-    }
-    
-    
-    // Now replace all the whiteSpace
+    // Now replace all the whiteSpace, and escape any double-quotes
     newTemplate = skReplaceSubStrings(
         newTemplate,
         [
             { from: "\t", to: String.raw`\t` },
             { from: "\v", to: String.raw`\v` },
             { from: "\r", to: String.raw`\r` },
-            { from: "\n", to: String.raw`\n` }
+            { from: "\n", to: String.raw`\n` },
+            { from: '"', to: String.raw`\"` }
         ]
     );
     
