@@ -1,6 +1,6 @@
 import scriptKnapperMain from './scriptKnapperMain';
 
-const templateObjects = String.raw`[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don't need any data."}, {"name": "dataAdditionTemplate", "template": "Test {+ 'testProp': 'test' +} addition. {:testProp:}"}]`;
+const templateObjects = String.raw`[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don't need any data."}, {"name": "dataAdditionTemplate", "template": "Test {+ 'testProp': 'test' +} addition. {:testProp:}"}, {"name": "badDataAdditionTemplate", "template": "Test {+ 'testProp': 'test'  addition."}]`;
 
 //-----------------------------------------------------------------------------------
 
@@ -439,4 +439,26 @@ test("scriptKnapperMain will call addDataObjectAdditionsFromTemplate() to add te
     expect(resultText).not.toContain('{+ "testProp": "test" +}');
     expect(resultText).toContain("test");
     
+});
+
+test("scriptKnapperMain will return an error if addDataObjectAdditionsFromTemplate() returns an error", () => {
+    
+    const templateName = "badDataAdditionTemplate";
+    
+    const markup = {
+        template: templateName,
+        data: []
+    };
+    
+    const markupObjects = JSON.stringify([
+        markup
+    ]);
+    
+    
+    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeTruthy();
 });
