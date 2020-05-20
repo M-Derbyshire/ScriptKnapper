@@ -1,6 +1,6 @@
 import scriptKnapperMain from './scriptKnapperMain';
 
-const templateObjects = '[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don\'t need any data."}]';
+const templateObjects = String.raw`[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don't need any data."}, {"name": "dataAdditionTemplate", "template": "Test {+ 'testProp': 'test' +} addition. {:testProp:}"}]`;
 
 //-----------------------------------------------------------------------------------
 
@@ -412,4 +412,31 @@ test("scriptKnapperMain will replace @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @ch
     expect(resultText).toContain(":}}");
     expect(resultText).toContain("{+");
     expect(resultText).toContain("+}");
+});
+
+// -----------------------------------------------------------------
+
+test("scriptKnapperMain will call addDataObjectAdditionsFromTemplate() to add template data-additions to the data object", () => {
+    
+    const templateName = "dataAdditionTemplate";
+    
+    const markup = {
+        template: templateName,
+        data: []
+    };
+    
+    const markupObjects = JSON.stringify([
+        markup
+    ]);
+    
+    
+    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeFalsy();
+    expect(resultText).not.toContain('{+ "testProp": "test" +}');
+    expect(resultText).toContain("test");
+    
 });
