@@ -7,7 +7,7 @@ import findObjectStringLength from '../findObjectStringLength/findObjectStringLe
         - The current template, as a string.
             
     Output:
-        - If there is an error, the function will return an array. The first indes will be true,
+        - If there is an error, the function will return an array. The first index will be true,
             to say there has been an error, and the second will be the error text.
         - If there is not an error, the function will return an array. The first index will be false,
             to say there hasn't been an error, and the second will be the new version of the data 
