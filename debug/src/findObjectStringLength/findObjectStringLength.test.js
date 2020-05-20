@@ -2,11 +2,11 @@ import findObjectStringLength from './findObjectStringLength';
 
 test("findObjectStringLength will return the correct length of the object in a string", ()=> {
     
-    const objectText = "{ 'data': { 'a': 'hello', 'b': 'goodbye' } } goodbye";
+    const objectText = "{: 'data': { 'a': 'hello', 'b': 'goodbye' } :} goodbye";
     
     const result = findObjectStringLength(objectText);
     
-    expect(result).toBe(44);
+    expect(result).toBe(46);
     
 });
 
@@ -14,7 +14,7 @@ test("findObjectStringLength will return the correct length of the object in a s
 
 test("findObjectStringLength will return -1 if given an incomplete object string", ()=> {
     
-    const objectText = "{ 'data': { 'a': 'hello', 'b': 'goodbye' }";
+    const objectText = "{: 'data': { 'a': 'hello', 'b': 'goodbye' :}";
     
     const result = findObjectStringLength(objectText);
     

@@ -1,6 +1,6 @@
 import populateTemplate from './populateTemplate';
 
-const simpleTemplate = "this is { data1 }, and that is {data2}, and over there is {data3 }. Watch out for @ohb and @chb, you know.";
+const simpleTemplate = "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know.";
 const templateName = "simpleTemplate";
 
 // -----------------------------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ test("populateTemplate will not attempt to resolve calls to other templates", ()
     
     const data = {
         "data1": "testData1",
-        "data2": '{{ "template": "otherTemplate", "data": [{ "data1": "dataHere" }] }}',
+        "data2": '{{: "template": "otherTemplate", "data": [{ "data1": "dataHere" }] :}}',
         "data3": "testData3"
     };
     

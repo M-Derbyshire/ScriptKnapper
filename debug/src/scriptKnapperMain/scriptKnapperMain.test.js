@@ -1,6 +1,6 @@
 import scriptKnapperMain from './scriptKnapperMain';
 
-const templateObjects = '[{"name": "simpleTemplate","template": "this is { data1 }, and that is {data2}, and over there is {data3 }. Watch out for @ohb and @chb, you know."},{"name": "templateLayer2","template": "this is some more data here: {data1}"},{"name": "noDataTemplate","template": "I don\'t need any data."}]';
+const templateObjects = '[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don\'t need any data."}]';
 
 //-----------------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ test("scriptKnapperMain will generate a template once, with an empty data object
     expect(typeof resultText).toBe("string");
     
     expect(resultError).toBeFalsy();
-    expect(resultText).toContain("I don't need any data.");
+    expect(resultText).toContain("I don't need any data."); //Found in the "noDataTemplate" template
 });
 
 // -----------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ test("scriptKnapperMain will embed the results of another template into the resu
         data: [
             { 
                 data1: "theData1", 
-                data2: 'testTemplate: {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] }} - This is now the string again. ',
+                data2: 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ',
                 data3: "theData3" 
             },
         ]
@@ -107,9 +107,9 @@ test("scriptKnapperMain will embed the results of a template call within a prope
         data: [
             { 
                 data1: "theData1", 
-                data2: '{{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{embedLayer3Data}" }] }}',
+                data2: '{{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{:embedLayer3Data:}" }] :}}',
                 data3: "theData3",
-                embedLayer3Data: '"embedLayer3Data": "{{ "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] }}"'
+                embedLayer3Data: '"embedLayer3Data": "{{: "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] :}}"'
             },
         ]
     };
@@ -176,7 +176,7 @@ test("scriptKnapperMain will return an error if a given embedded template reques
         data: [
             { 
                 data1: "theData1", 
-                data2: 'testTemplate: {{"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" THERE SHOULD BE A CLOSE BRACE HERE, { "data1": "theEmbeddedData2" }] }} - This is now the string again. ',
+                data2: 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" THERE SHOULD BE A CLOSE BRACE HERE, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ',
                 data3: "theData3" 
             },
         ]
@@ -203,7 +203,7 @@ test("scriptKnapperMain will return an error if a given embedded template reques
         data: [
             { 
                 data1: "theData1", 
-                data2: "testTemplate: {{ sjdhfsjdhfkjsdhf }} - This is now the string again. ",
+                data2: "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ",
                 data3: "theData3" 
             },
         ]
@@ -219,6 +219,42 @@ test("scriptKnapperMain will return an error if a given embedded template reques
     expect(typeof resultText).toBe("string");
     
     expect(resultError).toBeTruthy();
+});
+
+test("scriptKnapperMain will return an error if a given embedded template request object doesn't have the right properties", () => {
+    
+    const templateName = "simpleTemplate";
+    
+    //No data
+    const markup1 = {
+        template: templateName
+    };
+    
+    // No template
+    const markup2 = {
+        data: [
+            { 
+                data1: "theData1", 
+                data2: "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ",
+                data3: "theData3" 
+            }
+        ]
+    };
+    
+    const markupObject1 = JSON.stringify(markup1);
+    
+    const markupObject2 = JSON.stringify(markup2);
+    
+    const [resultError1, resultText1] = checkForMarkupObjectError(markupObject1, templateObjects);
+    const [resultError2, resultText2] = checkForMarkupObjectError(markupObject2, templateObjects);
+    
+    expect(typeof resultError1).toBe("boolean");
+    expect(typeof resultText1).toBe("string");
+    expect(typeof resultError2).toBe("boolean");
+    expect(typeof resultText2).toBe("string");
+    
+    expect(resultError1).toBeTruthy();
+    expect(resultError2).toBeTruthy();
 });
 
 test("scriptKnapperMain will return an error caught by the checkForMarkupObjectError function", () => {
@@ -251,7 +287,7 @@ test("scriptKnapperMain will insert data that has been passed down from another 
         data: [
             { 
                 data1: "theData1", 
-                data2: '{{ "template": "templateLayer2", "data": [{"data1": "hello, {data3}"}] }}',
+                data2: '{{: "template": "templateLayer2", "data": [{"data1": "hello, {:data3:}"}] :}}',
                 data3: "theData3" 
             }
         ]
@@ -270,7 +306,7 @@ test("scriptKnapperMain will insert data that has been passed down from another 
     expect(resultText).toContain("hello, theData3");
 });
 
-test("scriptKnapperMain will resolve a parameter call corectly following more than one template call.", () => {
+test("scriptKnapperMain will resolve a parameter call correctly following more than one template call.", () => {
     
     //This was a debug in version 1.0, so adding this.
     //If this test fails, check populateTemplate() and see how
@@ -283,8 +319,8 @@ test("scriptKnapperMain will resolve a parameter call corectly following more th
         template: templateName,
         data: [
             { 
-                data1: '{{ "template": "templateLayer2", "data": [{"data1": "theData1"}] }}', 
-                data2: '{{ "template": "templateLayer2", "data": [{"data1": "theData2"}] }}',
+                data1: '{{: "template": "templateLayer2", "data": [{"data1": "theData1"}] :}}', 
+                data2: '{{: "template": "templateLayer2", "data": [{"data1": "theData2"}] :}}',
                 data3: "theData3"
             }
         ]
@@ -308,7 +344,7 @@ test("scriptKnapperMain will resolve a parameter call corectly following more th
 
 // --------------------------------------------------------------------------------------------------
 
-test("scriptKnapperMain will not return { or } in its string if @ohb/@chb haven't been used", () => {
+test("scriptKnapperMain will not return {:, :}, {{:, :}}, {+ or +} if @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @chb+ haven't been used", () => {
     
     const templateName = "templateLayer2"; //This template doesn't use @ohb/@chb
     
@@ -331,11 +367,15 @@ test("scriptKnapperMain will not return { or } in its string if @ohb/@chb haven'
     expect(typeof resultText).toBe("string");
     
     expect(resultError).toBeFalsy();
-    expect(resultText).not.toContain("{");
-    expect(resultText).not.toContain("}");
+    expect(resultText).not.toContain("{:");
+    expect(resultText).not.toContain(":}");
+    expect(resultText).not.toContain("{{:");
+    expect(resultText).not.toContain(":}}");
+    expect(resultText).not.toContain("{+");
+    expect(resultText).not.toContain("+}");
 });
 
-test("scriptKnapperMain will replace any @ohb/@chb in the template or data with open/closing handlebars", () => {
+test("scriptKnapperMain will replace @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @chb+ in the template or data with the correct string", () => {
     
     const templateName = "simpleTemplate";
     
@@ -344,7 +384,7 @@ test("scriptKnapperMain will replace any @ohb/@chb in the template or data with 
         data: [
             { 
                 data1: "testData1",
-                data2: "@ohb testData2 @chb",
+                data2: "@ohb: @odhb: @ohb+ testData2 @chb+ @cdhb: @chb:",
                 data3: "testData3"
             }
         ]
@@ -360,8 +400,16 @@ test("scriptKnapperMain will replace any @ohb/@chb in the template or data with 
     expect(typeof resultText).toBe("string");
     
     expect(resultError).toBeFalsy();
-    expect(resultText).not.toContain("@ohb");
-    expect(resultText).not.toContain("@chb");
-    expect(resultText).toContain("{");
-    expect(resultText).toContain("}");
+    expect(resultText).not.toContain("@ohb:");
+    expect(resultText).not.toContain("@chb:");
+    expect(resultText).not.toContain("@odhb:");
+    expect(resultText).not.toContain("@cdhb:");
+    expect(resultText).not.toContain("@ohb+");
+    expect(resultText).not.toContain("@chb+");
+    expect(resultText).toContain("{:");
+    expect(resultText).toContain(":}");
+    expect(resultText).toContain("{{:");
+    expect(resultText).toContain(":}}");
+    expect(resultText).toContain("{+");
+    expect(resultText).toContain("+}");
 });
