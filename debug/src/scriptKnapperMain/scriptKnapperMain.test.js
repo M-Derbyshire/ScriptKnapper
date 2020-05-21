@@ -1,6 +1,6 @@
 import scriptKnapperMain from './scriptKnapperMain';
 
-const templateObjects = String.raw`[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don't need any data."}, {"name": "dataAdditionTemplate", "template": "Test {+ 'testProp': 'test' +} addition. {:testProp:}"}, {"name": "badDataAdditionTemplate", "template": "Test {+ 'testProp': 'test'  addition."}]`;
+const templateObjects = String.raw`[{"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},{"name": "templateLayer2","template": "this is some more data here: {:data1:}"},{"name": "noDataTemplate","template": "I don't need any data."}, {"name": "dataAdditionTemplate", "template": "Test {+ "testProp": "test" +} addition. {:testProp:}"}, {"name": "badDataAdditionTemplate", "template": "Test {+ "testProp": "test"  addition."}]`;
 
 //-----------------------------------------------------------------------------------
 

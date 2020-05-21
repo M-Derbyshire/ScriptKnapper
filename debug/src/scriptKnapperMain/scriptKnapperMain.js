@@ -4,6 +4,8 @@ import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
 import replaceSubstrings from './../replaceSubstrings/replaceSubstrings';
 import findObjectStringLength from './../findObjectStringLength/findObjectStringLength';
 import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMarkupObjectError';
+import addDataObjectAdditionsFromTemplate from '../addDataObjectAdditionsFromTemplate/addDataObjectAdditionsFromTemplate';
+import removeDataAdditionTags from '../removeDataAdditionTags/removeDataAdditionTags';
 
 /*
     Inputs:
@@ -73,6 +75,31 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
             {
                 errDataJSON = JSON.stringify([markupObjects[markupIter].data[dataIter]]);
                 
+                //Add any data addition calls from the template to the data-object
+                let [dataObjectAdditionIsError, dataObjectAdditionResult] = addDataObjectAdditionsFromTemplate(
+                    markupObjects[markupIter].data[dataIter],
+                    templateObject.template
+                );
+                
+                if(dataObjectAdditionIsError)
+                {
+                    return [true, dataObjectAdditionResult];
+                }
+                markupObjects[markupIter].data[dataIter] = dataObjectAdditionResult;
+                
+                //Now remove the tags from the template
+                let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
+                
+                if(additionTagsRemovalIsError) 
+                {
+                    //This shouldn't error if the additions didn't, but will check just in case of unforseen bugs
+                    return [true, additionTagsRemovalResult];
+                }
+                templateObject.template = additionTagsRemovalResult;
+                
+                
+                
+                
                 //Populate the template with the data values
                 let [thisIterationResultIsError, thisIterationResultText] = populateTemplate(
                     markupObjects[markupIter].data[dataIter],
@@ -87,6 +114,9 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                         thisIterationResultText
                     ];
                 }
+                
+                
+                
                 
                 //Now we need to check if there's any embedded template calls,
                 //and resolve them.
@@ -140,6 +170,9 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                         }
                     }
                 }
+                
+                
+                
                 
                 //Finally, add to the result to be returned.
                 resultText += thisIterationResultText;
