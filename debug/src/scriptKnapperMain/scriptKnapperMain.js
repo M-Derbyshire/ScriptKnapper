@@ -196,8 +196,12 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
     if(!resultIsError && !isInnerTemplate)
     {
         resultText = replaceSubstrings(resultText, [
-            { from: "@ohb", to: "{" },
-            { from: "@chb", to: "}" }
+            { from: "@ohb:", to: "{:" },
+            { from: "@chb:", to: ":}" },
+            { from: "@odhb:", to: "{{:" },
+            { from: "@cdhb:", to: ":}}" },
+            { from: "@ohb+", to: "{+" },
+            { from: "@chb+", to: "+}" },
         ]);
     }
     
