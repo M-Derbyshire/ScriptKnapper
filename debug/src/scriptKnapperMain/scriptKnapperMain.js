@@ -122,7 +122,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                 //and resolve them.
                 let braceIndex;
                 let objectLength;
-                while((braceIndex = thisIterationResultText.indexOf("{{")) > -1)
+                while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
                 {
                     errPreText = "Encountered a problem parsing call to embedded template: ";
                     
@@ -133,9 +133,11 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                     }
                     else
                     {
-                        // Bear in mind we don't want to include the first outer braces (it's currently 
-                        //double braces, and we want single)
-                        let innerMarkupObject = JSON.parse(thisIterationResultText.substr(braceIndex + 1, objectLength - 2));
+                        // Bear in mind, we don't want to include the outer braces (it's currently 
+                        //double braces, then a colon. We want single braces)
+                        let innerMarkupObject = JSON.parse(
+                            "{" + thisIterationResultText.substring(braceIndex + 3, braceIndex + objectLength - 3) + "}"
+                        );
                         
                         //merge this with the current data object
                         let mergedDataObject = { template: innerMarkupObject.template, data: [] };
