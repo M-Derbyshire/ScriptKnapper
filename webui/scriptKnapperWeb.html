@@ -64,7 +64,7 @@
                     <p class="toolDescription">
                         Enter a string to manipulate. You can then remove tabs and line breaks (whitespace), 
                         or replace them with spaces or \t, \n, etc. You can also escape quotation marks, and 
-                        replace handlebar braces with @ohb and @chb.
+                        replace handlebar brace tags with their replacement strings (such as "@ohb:" for "{:").
                     </p>
                     <div id="prepareStringOptions" class="textAreaContainer">
                         <ul>
@@ -80,7 +80,7 @@
                                 2. <input type="checkbox" name="prepareStringEscapeDoubleQuotes" id="prepareStringEscapeDoubleQuotes" /> Escape double quotes
                             </li>
                             <li>
-                                3. <input type="checkbox" name="prepareStringReplaceHandlebars" id="prepareStringReplaceHandlebars" /> Replace handlebar braces
+                                3. <input type="checkbox" name="prepareStringReplaceTags" id="prepareStringReplaceTags" /> Replace tag strings
                             </li>
                         </ul>
                     </div>
@@ -150,7 +150,7 @@
         
         <footer>
             ScriptKnapper: Developed by Matthew Stuart Derbyshire.
-            ScriptKnapper Web UI: Version 1.2.1.
+            ScriptKnapper Web UI: Version 2.0
         </footer>
     </body>
 </html>

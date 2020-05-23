@@ -48,7 +48,7 @@ function prepareStringClickAction()
     
     let whitespaceDropdown = document.getElementById("prepareStringWhitespaceDropdown");
     let escapeDoubleQuotes = document.getElementById("prepareStringEscapeDoubleQuotes");
-    let replaceHandlebars = document.getElementById("prepareStringReplaceHandlebars");
+    let replaceTags = document.getElementById("prepareStringReplaceTags");
     
     let replacementOptions = [];
     
@@ -90,11 +90,17 @@ function prepareStringClickAction()
         );
     }
     
-    if(replaceHandlebars.checked)
+    if(replaceTags.checked)
     {
+        //The double braces need to be first (otherwise, "{:" will be replaced before "{{:",
+        //which would result with "{{:" becoming "{@ohb:")
         replacementOptions.push(
-            { from: "{", to: "@ohb" },
-            { from: "}", to: "@chb" }
+            { from: "{{:", to: "@odhb:" },
+            { from: ":}}", to: "@cdhb:" },
+            { from: "{:", to: "@ohb:" },
+            { from: ":}", to: "@chb:" },
+            { from: "{+", to: "@ohb+" },
+            { from: "+}", to: "@chb+" }
         );
     }
     
@@ -116,7 +122,6 @@ function prepareStringClickAction()
 function buildTemplateJSONClickAction()
 {
     let skReplaceSubStrings = replaceSubstrings; //In the scriptKnapper library
-    let skObjectStringLength  = findObjectStringLength; //In the scriptKnapper library
     
     let templateName = document.getElementById("buildTemplateNameInput").value;
     document.getElementById("buildTemplateNameInput").value = "Template Name"; // Reset this now
