@@ -23,7 +23,9 @@ function replaceSubstrings(text, replacements)
     // This seems to be a collection, so .foreach just won't work.
     for(let i = 0; i < replacements.length; i++)
     {
-        fromRegEx = new RegExp(replacements[i].from, 'gi');
+        //We need to replace any regex special characters with escaped versions
+        const specialCharsEscaped = replacements[i].from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        fromRegEx = new RegExp(specialCharsEscaped, 'gi');
         text = text.replace(fromRegEx, replacements[i].to);
     }
     
