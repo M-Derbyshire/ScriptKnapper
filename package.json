@@ -1,0 +1,31 @@
+{
+  "name": "scriptknapper",
+  "version": "2.0.0",
+  "description": "A javascript library for code/script generation, with JSON defined templates",
+  "main": "build/scriptKnapper.js",
+  "scripts": {
+    "test": "react-scripts test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M-Derbyshire/ScriptKnapper.git"
+  },
+  "keywords": [
+    "script",
+    "knapper",
+    "scriptknapper",
+    "code",
+    "generator",
+    "generation"
+  ],
+  "author": "Matthew Stuart Derbyshire",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/M-Derbyshire/ScriptKnapper/issues"
+  },
+  "homepage": "https://github.com/M-Derbyshire/ScriptKnapper#readme",
+  "dependencies": {
+    "react-scripts": "^3.4.1",
+    "readline-sync": "^1.4.10"
+  }
+}
