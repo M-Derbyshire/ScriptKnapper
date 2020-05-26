@@ -20,8 +20,7 @@ function checkForMarkupObjectError(markupObject, templateObjects)
     
     try
     {
-        // Does the markupObject have both a "data" and "template" property?
-        if(!markupObject.hasOwnProperty("data")) { throw "The given template call has not been given a data property."; }
+        // Does the markupObject have a "template" property?
         if(!markupObject.hasOwnProperty("template")) { throw "The given template call has not been given a template property."; }
         
         // If the called template doesn't exist, or if we have more then one of them
@@ -36,8 +35,8 @@ function checkForMarkupObjectError(markupObject, templateObjects)
             throw "The given template name (" + templateName + ") has more than one match.";
         }
         
-        //Next, is the data property an array?
-        if(!Array.isArray(markupObject.data))
+        //Next, if given a data property, is it an array?
+        if(markupObject.hasOwnProperty("data") && !Array.isArray(markupObject.data))
         {
             throw "The provided data to the " + markupObject.template + " template is not in an array.";
         }

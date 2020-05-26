@@ -89,7 +89,6 @@ function checkForMarkupObjectError(markupObject, templateObjects)
     try
     {
         
-        if(!markupObject.hasOwnProperty("data")) { throw "The given template call has not been given a data property."; }
         if(!markupObject.hasOwnProperty("template")) { throw "The given template call has not been given a template property."; }
         
         
@@ -105,7 +104,7 @@ function checkForMarkupObjectError(markupObject, templateObjects)
         }
         
         
-        if(!Array.isArray(markupObject.data))
+        if(markupObject.hasOwnProperty("data") && !Array.isArray(markupObject.data))
         {
             throw "The provided data to the " + markupObject.template + " template is not in an array.";
         }
@@ -399,7 +398,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
             
             let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
             errTemplateName = templateObject.name;
-            if(markupObjects[markupIter].data.length === 0) 
+            if(!markupObjects[markupIter].hasOwnProperty("data") || markupObjects[markupIter].data.length === 0) 
             {
                 markupObjects[markupIter].data = [{}];
             }
@@ -540,6 +539,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
     
     return [resultIsError, resultText];
 }
+
 
 
 

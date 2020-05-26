@@ -55,22 +55,28 @@ test("scriptKnapperMain will generate a template once, with an empty data object
     
     const templateName = "noDataTemplate";
     
-    const markup = {
+    //Empty data array
+    const markupObjects1 = JSON.stringify([{
         template: templateName,
         data: []
-    };
+    }]);
     
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
+    //No data property
+    const markupObjects2 = JSON.stringify([{
+        template: templateName
+    }]);
     
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
+    const [resultError1, resultText1] = scriptKnapperMain(markupObjects1, templateObjects);
+    expect(typeof resultError1).toBe("boolean");
+    expect(typeof resultText1).toBe("string");
+    expect(resultError1).toBeFalsy();
+    expect(resultText1).toContain("I dont need any data."); //Found in the "noDataTemplate" template
     
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).toContain("I dont need any data."); //Found in the "noDataTemplate" template
+    const [resultError2, resultText2] = scriptKnapperMain(markupObjects2, templateObjects);
+    expect(typeof resultError2).toBe("boolean");
+    expect(typeof resultText2).toBe("string");
+    expect(resultError2).toBeFalsy();
+    expect(resultText2).toContain("I dont need any data.");
 });
 
 // -----------------------------------------------------------------------------------

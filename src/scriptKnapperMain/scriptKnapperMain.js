@@ -66,7 +66,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
             //(for every passed data object).
             let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
             errTemplateName = templateObject.name;
-            if(markupObjects[markupIter].data.length === 0) //If no data given, just run once with an empty data object
+            if(!markupObjects[markupIter].hasOwnProperty("data") || markupObjects[markupIter].data.length === 0) //If no data given, just run once with an empty data object
             {
                 markupObjects[markupIter].data = [{}];
             }
