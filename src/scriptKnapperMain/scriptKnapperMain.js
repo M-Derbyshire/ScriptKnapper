@@ -13,8 +13,6 @@ import removeDataAdditionTags from '../removeDataAdditionTags/removeDataAddition
                     entered into the template.
         - templateObjectsJSON: This is the JSON which is used when
                     generating errors.
-        - isInnerTemplate: A boolean value. Is this call for a
-                    template within a template?
             
     Output:
         - This function will return an array with 2 values,
@@ -26,7 +24,7 @@ import removeDataAdditionTags from '../removeDataAdditionTags/removeDataAddition
             or an error if there was a problem during the
             process.
 */
-function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTemplate = false)
+function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
 {
     let resultIsError = false;
     let resultText = "";
@@ -151,8 +149,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
                         
                         let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
                             JSON.stringify([mergedDataObject]),
-                            templateObjectsJSON,
-                            true
+                            templateObjectsJSON
                         );
                         
                         if(embeddedTemplateResultIsError)
@@ -193,7 +190,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
     
     //Now, finally, change any @ohb and @chd in the template into single braces
     //(If this is not an inner template call)
-    if(!resultIsError && !isInnerTemplate)
+    if(!resultIsError)
     {
         resultText = replaceSubstrings(resultText, [
             { from: "@ohb:", to: "{:" },
