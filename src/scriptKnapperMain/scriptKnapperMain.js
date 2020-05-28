@@ -6,13 +6,14 @@ import findObjectStringLength from './../findObjectStringLength/findObjectString
 import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMarkupObjectError';
 import addDataObjectAdditionsFromTemplate from '../addDataObjectAdditionsFromTemplate/addDataObjectAdditionsFromTemplate';
 import removeDataAdditionTags from '../removeDataAdditionTags/removeDataAdditionTags';
+import resolveInnerTemplateCalls from '../resolveInnerTemplateCalls/resolveInnerTemplateCalls';
 
 /*
     Inputs:
         - markupObjectsJSON: This is the JSON with the data to be
                     entered into the template.
-        - templateObjectsJSON: This is the JSON which is used when
-                    generating errors.
+        - templateObjectsJSON: This is the JSON with the different
+                    templates.
             
     Output:
         - This function will return an array with 2 values,
@@ -118,58 +119,25 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                 
                 //Now we need to check if there's any embedded template calls,
                 //and resolve them.
-                let braceIndex;
-                let objectLength;
-                while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
-                {
-                    errPreText = "Encountered a problem parsing call to embedded template: ";
-                    
-                    objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex));
-                    if(objectLength === -1)
-                    {
-                        throw "Embedded template object is invalid or incomplete.";
-                    }
-                    else
-                    {
-                        // Bear in mind, we don't want to include the outer braces (it's currently 
-                        //double braces, then a colon. We want single braces)
-                        let innerMarkupObject = JSON.parse(
-                            "{" + thisIterationResultText.substring(braceIndex + 3, braceIndex + objectLength - 3) + "}"
-                        );
-                        
-                        //merge this with the current data object
-                        let mergedDataObject = { template: innerMarkupObject.template, data: [] };
-                        for(let i = 0; i < innerMarkupObject.data.length; i++)
-                        {
-                            mergedDataObject.data[i] = mergeObjects([
-                                innerMarkupObject.data[i], 
-                                markupObjects[markupIter].data[dataIter]
-                            ]);
-                        }
-                        
-                        let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
-                            JSON.stringify([mergedDataObject]),
-                            templateObjectsJSON
-                        );
-                        
-                        if(embeddedTemplateResultIsError)
-                        {
-                            return [
-                                true,
-                                embeddedTemplateResultText
-                            ];
-                        }
-                        else
-                        {
-                            // Replace the template call with its result
-                            thisIterationResultText = 
-                                thisIterationResultText.substring(0, braceIndex) + 
-                                embeddedTemplateResultText +
-                                thisIterationResultText.substring(braceIndex + objectLength);
-                        }
-                    }
-                }
+                errPreText = "Encountered a problem parsing call to embedded template: ";
                 
+                const [innerTemplateResolveIsError, innerTemplateResolveResultText] = resolveInnerTemplateCalls(
+                    thisIterationResultText,
+                    {
+                        template: markupObjects[markupIter].template, 
+                        data: [markupObjects[markupIter].data[dataIter]] //We only want the current data object here
+                    },
+                    templateObjects //all the templates
+                );
+                
+                if(innerTemplateResolveIsError)
+                {
+                    return [
+                        true,
+                        innerTemplateResolveResultText
+                    ];
+                }
+                thisIterationResultText = innerTemplateResolveResultText;
                 
                 
                 

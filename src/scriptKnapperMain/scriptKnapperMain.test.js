@@ -79,67 +79,6 @@ test("scriptKnapperMain will generate a template once, with an empty data object
     expect(resultText2).toContain("I dont need any data.");
 });
 
-// -----------------------------------------------------------------------------------
-
-test("scriptKnapperMain will embed the results of another template into the result, when given one (returning result for all data objects passed)", () => {
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                data2: 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ',
-                data3: "theData3" 
-            },
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).toContain("theEmbeddedData1");
-    expect(resultText).toContain("theEmbeddedData2");
-});
-
-test("scriptKnapperMain will embed the results of a template call within a property, that's within an inner template call, into the result", () => {
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                data2: '{{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{:embedLayer3Data:}" }] :}}',
-                data3: "theData3",
-                embedLayer3Data: '"embedLayer3Data": "{{: "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] :}}"'
-            },
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).toContain("theEmbeddedData");
-    expect(resultText).toContain("theDeepEmbeddedData");
-});
-
 
 
 //-------------------------------------------------------------------------------------------
@@ -179,59 +118,6 @@ test("scriptKnapperMain will return an error if the given markup or template JSO
     expect(resultError2).toBeTruthy();
 });
 
-test("scriptKnapperMain will return an error if a given embedded template request object isn't complete", () => {
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                data2: 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" THERE SHOULD BE A CLOSE BRACE HERE, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ',
-                data3: "theData3" 
-            },
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
-});
-
-test("scriptKnapperMain will return an error if a given embedded template request object can't be parsed", () => {
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                data2: "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ",
-                data3: "theData3" 
-            },
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
-});
 
 test("scriptKnapperMain will return an error caught by the checkForMarkupObjectError function", () => {
     
@@ -410,7 +296,7 @@ test("scriptKnapperMain will call addDataObjectAdditionsFromTemplate() to add te
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
+    console.log(resultText);
     expect(resultError).toBeFalsy();
     expect(resultText).not.toContain('{+ "testProp": "test" +}');
     expect(resultText).toContain("test");
