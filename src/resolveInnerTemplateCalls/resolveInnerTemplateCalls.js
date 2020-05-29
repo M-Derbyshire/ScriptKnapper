@@ -52,7 +52,7 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
             {
                 mergedDataObject.data[i] = mergeObjects([
                     innerMarkupObject.data[i], 
-                    ...dataObject.data
+                    dataObject
                 ]);
             }
             
@@ -64,7 +64,6 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
             
             if(embeddedTemplateResultIsError)
             {
-                console.log(embeddedTemplateResultText);
                 return [
                     true,
                     embeddedTemplateResultText

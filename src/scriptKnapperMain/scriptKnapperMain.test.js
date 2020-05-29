@@ -296,7 +296,7 @@ test("scriptKnapperMain will call addDataObjectAdditionsFromTemplate() to add te
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    console.log(resultText);
+    
     expect(resultError).toBeFalsy();
     expect(resultText).not.toContain('{+ "testProp": "test" +}');
     expect(resultText).toContain("test");

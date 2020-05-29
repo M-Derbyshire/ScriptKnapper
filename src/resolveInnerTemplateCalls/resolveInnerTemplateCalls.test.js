@@ -12,20 +12,13 @@ const templateObjects = JSON.parse(String.raw`[
 
 test("resolveInnerTemplateCalls will embed the results of an inner template into the result, when given one (returning results for all data objects passed)", () => {
     
-    const templateName = "simpleTemplate";
-    
-    const markupObjects = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1"
-            },
-        ]
+    const dataObject = { 
+        data1: "theData1"
     };
     
     const currentText = 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] :}} - This is now the string again.';
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, markupObjects, templateObjects);
+    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
@@ -38,21 +31,14 @@ test("resolveInnerTemplateCalls will embed the results of an inner template into
 
 test("resolveInnerTemplateCalls will embed the results of a template call within a property, that's within an inner template call, into the result", () => {
     
-    const templateName = "simpleTemplate";
-    
-    const markupObjects = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                embedLayer3Data: ' - {{: "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] :}} - '
-            },
-        ]
+    const dataObject = { 
+        data1: "theData1", 
+        embedLayer3Data: ' - {{: "template": "templateLayer2", "data": [{ "data1": "theDeepEmbeddedData" }] :}} - '
     };
     
     const currentText = '{{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{:embedLayer3Data:}" }] :}}';
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, markupObjects, templateObjects);
+    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
@@ -65,20 +51,13 @@ test("resolveInnerTemplateCalls will embed the results of a template call within
 
 test("resolveInnerTemplateCalls will return an error if a given template request object isn't complete", () => {
     
-    const templateName = "simpleTemplate";
-    
-    const markupObjects = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1"
-            },
-        ]
+    const dataObject = { 
+        data1: "theData1"
     };
     
     const currentText = 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" THERE SHOULD BE A CLOSE BRACE HERE, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ';
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, markupObjects, templateObjects);
+    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
@@ -90,20 +69,13 @@ test("resolveInnerTemplateCalls will return an error if a given template request
 
 test("resolveInnerTemplateCalls will return an error if a given template request object can't be parsed", () => {
     
-    const templateName = "simpleTemplate";
-    
-    const markupObjects = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1"
-            },
-        ]
+    const dataObject = { 
+        data1: "theData1"
     };
     
     const currentText = "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ";
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, markupObjects, templateObjects);
+    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");

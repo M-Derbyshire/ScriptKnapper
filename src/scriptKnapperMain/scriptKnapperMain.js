@@ -123,10 +123,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                 
                 const [innerTemplateResolveIsError, innerTemplateResolveResultText] = resolveInnerTemplateCalls(
                     thisIterationResultText,
-                    {
-                        template: markupObjects[markupIter].template, 
-                        data: [markupObjects[markupIter].data[dataIter]] //We only want the current data object here
-                    },
+                    markupObjects[markupIter].data[dataIter], //We only want the current data object here
                     templateObjects //all the templates
                 );
                 
