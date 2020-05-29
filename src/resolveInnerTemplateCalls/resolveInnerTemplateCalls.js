@@ -3,10 +3,27 @@ import mergeObjects from '../mergeObjects/mergeObjects';
 import prepareErrorMessage from '../prepareErrorMessage/prepareErrorMessage';
 import scriptKnapperMain from '../scriptKnapperMain/scriptKnapperMain';
 
+/*
+    Inputs:
+        - thisIterationResultText: The text that may contain inner-template
+            calls.
+        - dataObject: This is the data object for the current data iteration.
+        - templateObjects: This is the array of template objects.
+            
+    Output:
+        - This function will return an array with 2 values,
+            to be destructured by the caller.
+        - The first value will be a boolean, which is true
+            if there was an error, or otherwise false. 
+        - The second value will be a string. This will be
+            the given text, with inner-templates resolved, 
+            or an error if there was a problem.
+*/
+
 function resolveInnerTemplateCalls(thisIterationResultText, dataObject, templateObjects)
 {
-    let braceIndex;
-    let objectLength;
+    let braceIndex; //The starting position of the next unresolved template call.
+    let objectLength; //The character length of the template call
     let errPreText = "Error handling embedded template call: "; //The first part of the string to feed into prepareErrorMessage()
     
     while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
@@ -25,11 +42,11 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
         }
         else
         {
-            // Bear in mind, we don't want to include the outer braces (it's currently 
-            //double braces, then a colon. We want single braces)
-            let innerMarkupObject;
+            let innerMarkupObject; //The template call object in the string
             try
             {
+                // Bear in mind, we don't want to include the outer braces (it's currently 
+                //double braces, then a colon. We just want single braces)
                 innerMarkupObject = JSON.parse(
                     "{" + thisIterationResultText.substring(braceIndex + 3, braceIndex + objectLength - 3) + "}"
                 );
@@ -46,7 +63,7 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
                 ];
             }
             
-            //merge this with the current data object
+            //Merge any data objects in the template call with the current data object
             let mergedDataObject = { template: innerMarkupObject.template, data: [] };
             for(let i = 0; i < innerMarkupObject.data.length; i++)
             {
@@ -56,7 +73,8 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
                 ]);
             }
             
-            
+            //Now feed the data and template objects back through this process,
+            //to be treated like a regular template call.
             let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
                 JSON.stringify([mergedDataObject]),
                 JSON.stringify(templateObjects)
