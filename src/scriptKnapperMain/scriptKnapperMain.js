@@ -23,7 +23,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     let resultText = "";
     let errPreText; //The first part of the string to feed into prepareErrorMessage()
     
-    // Try to parse the JSON data into objects, and make sure everything is correct
+    // Try to parse the JSON data into objects
     let markupObjects, templateObjects;
     try
     {
