@@ -79,7 +79,7 @@ test("feedDataObjectsIntoTemplate will insert data that has been passed down fro
     expect(resultText).toContain("hello, theData3");
 });
 
-test("scriptKnapperMain will resolve a parameter call correctly following more than one template call.", () => {
+test("feedDataObjectsIntoTemplate will resolve a parameter call correctly following more than one template call.", () => {
     
     //This was a debug in version 1.0, so adding this.
     //If this test fails, check populateTemplate() and see how
