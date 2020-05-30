@@ -1,11 +1,11 @@
-import populateTemplate from './populateTemplate';
+import populateTemplateWithGivenData from './populateTemplateWithGivenData';
 
 const simpleTemplate = "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know.";
 const templateName = "simpleTemplate";
 
 // -----------------------------------------------------------------------------------------------------------------
 
-test("populateTemplate will fill a template with simple strings as data (regardless of the whitespace in the braces)", () => {
+test("populateTemplateWithGivenData will fill a template with simple strings as data (regardless of the whitespace in the braces)", () => {
     
     const data = {
         "data1": "testData1",
@@ -13,7 +13,7 @@ test("populateTemplate will fill a template with simple strings as data (regardl
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplate(data, templateName, simpleTemplate);
+    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
@@ -25,7 +25,7 @@ test("populateTemplate will fill a template with simple strings as data (regardl
     expect(resultText).toContain(data.data3);
 });
 
-test("populateTemplate will not attempt to resolve calls to other templates", () => {
+test("populateTemplateWithGivenData will not attempt to resolve calls to other templates", () => {
     
     const data = {
         "data1": "testData1",
@@ -33,7 +33,7 @@ test("populateTemplate will not attempt to resolve calls to other templates", ()
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplate(data, templateName, simpleTemplate);
+    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
@@ -47,7 +47,7 @@ test("populateTemplate will not attempt to resolve calls to other templates", ()
 
 // --------------------------------------------------------------------------------------------
 
-test("populateTemplate will return an error if it cannot find the requested data in the dataObject", () => {
+test("populateTemplateWithGivenData will return an error if it cannot find the requested data in the dataObject", () => {
     
     const data = {
         "data1": "testData1",
@@ -55,7 +55,7 @@ test("populateTemplate will return an error if it cannot find the requested data
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplate(data, templateName, simpleTemplate);
+    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
@@ -63,7 +63,7 @@ test("populateTemplate will return an error if it cannot find the requested data
     expect(resultError).toBeTruthy();
 });
 
-test("populateTemplate will return an error if given a data value that is not a string", () => {
+test("populateTemplateWithGivenData will return an error if given a data value that is not a string", () => {
     
     const data = {
         "data1": "testData1",
@@ -71,7 +71,7 @@ test("populateTemplate will return an error if given a data value that is not a 
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplate(data, templateName, simpleTemplate);
+    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
     
     expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");

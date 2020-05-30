@@ -1,6 +1,6 @@
 import addDataObjectAdditionsFromTemplate from '../addDataObjectAdditionsFromTemplate/addDataObjectAdditionsFromTemplate';
 import removeDataAdditionTags from '../removeDataAdditionTags/removeDataAdditionTags';
-import populateTemplate from '../populateTemplate/populateTemplate';
+import populateTemplateWithGivenData from '../populateTemplateWithGivenData/populateTemplateWithGivenData';
 import resolveInnerTemplateCalls from '../resolveInnerTemplateCalls/resolveInnerTemplateCalls';
 import prepareErrorMessage from '../prepareErrorMessage/prepareErrorMessage';
 
@@ -57,7 +57,7 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             
             
             //Populate the template with the data values
-            let [thisIterationResultIsError, thisIterationResultText] = populateTemplate(
+            let [thisIterationResultIsError, thisIterationResultText] = populateTemplateWithGivenData(
                 markupObject.data[dataIter],
                 templateObject.name,
                 templateObject.template

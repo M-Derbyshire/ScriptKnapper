@@ -1,5 +1,5 @@
-import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
-import findObjectStringLength from './../findObjectStringLength/findObjectStringLength';
+import prepareErrorMessage from '../prepareErrorMessage/prepareErrorMessage';
+import findObjectStringLength from '../findObjectStringLength/findObjectStringLength';
 
 /*
     Inputs:
@@ -21,7 +21,7 @@ import findObjectStringLength from './../findObjectStringLength/findObjectString
             problem populating the tmplate.
 */
 
-function populateTemplate(dataObject, templateName, template)
+function populateTemplateWithGivenData(dataObject, templateName, template)
 {
     let resultText = template;
     let resultIsError = false;
@@ -103,4 +103,4 @@ function populateTemplate(dataObject, templateName, template)
     return [resultIsError, resultText];
 }
 
-export default populateTemplate;
+export default populateTemplateWithGivenData;
