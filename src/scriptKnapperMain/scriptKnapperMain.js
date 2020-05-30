@@ -27,7 +27,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     let markupObjects, templateObjects;
     try
     {
-        errPreText = "111 Encountered a problem parsing the provided template JSON: ";
+        errPreText = "Encountered a problem parsing the provided template JSON: ";
         templateObjects = JSON.parse(templateObjectsJSON);
         
         errPreText = "Encountered a problem parsing the provided markup JSON: ";
