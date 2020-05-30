@@ -48,6 +48,48 @@ test("scriptKnapperMain will return an error if the given markup or template JSO
 
 // --------------------------------------------------------------------------------------
 
+test("scriptKnapperMain will return the results from resolveAllMarkupObjects()", () => {
+    
+    const templateName = "simpleTemplate";
+    
+    const markupObjectsJSON = JSON.stringify([{
+        template: templateName,
+        data: [
+            { data1: "theData1", data2: "theData2", data3: "theData3" }
+        ]
+    }]);
+    
+    const [resultError, resultText] = scriptKnapperMain(markupObjectsJSON, templateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeFalsy();
+    expect(resultText).toContain("theData1");
+    expect(resultText).toContain("theData2");
+    expect(resultText).toContain("theData3");
+});
+
+
+test("scriptKnapperMain will return an error that is returned from resolveAllMarkupObjects()", () => {
+    
+    const templateName = "simpleTemplate";
+    
+    const markupObjectsJSON = JSON.stringify([{
+        template: templateName,
+        data: [{}] //This template requires data, but none given
+    }]);
+    
+    const [resultError, resultText] = scriptKnapperMain(markupObjectsJSON, templateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeTruthy();
+});
+
+// --------------------------------------------------------------------------------------
+
 test("scriptKnapperMain will call replaceTagStringSubstitutions() and return the replacements", () => {
     
     const templateName = "simpleTemplate";
