@@ -1,10 +1,7 @@
-import populateTemplate from './../populateTemplate/populateTemplate';
 import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
 import replaceSubstrings from './../replaceSubstrings/replaceSubstrings';
 import checkForMarkupObjectError from './../checkForMarkupObjectError/checkForMarkupObjectError';
-import addDataObjectAdditionsFromTemplate from '../addDataObjectAdditionsFromTemplate/addDataObjectAdditionsFromTemplate';
-import removeDataAdditionTags from '../removeDataAdditionTags/removeDataAdditionTags';
-import resolveInnerTemplateCalls from '../resolveInnerTemplateCalls/resolveInnerTemplateCalls';
+import feedDataObjectsIntoTemplate from '../feedDataObjectsIntoTemplate/feedDataObjectsIntoTemplate';
 
 /*
     Inputs:
@@ -68,78 +65,18 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
                 markupObjects[markupIter].data = [{}];
             }
             
-            for(let dataIter = 0; dataIter < markupObjects[markupIter].data.length; dataIter++)
-            {
-                errDataJSON = JSON.stringify([markupObjects[markupIter].data[dataIter]]);
-                
-                //Add any data addition calls from the template to the data-object
-                let [dataObjectAdditionIsError, dataObjectAdditionResult] = addDataObjectAdditionsFromTemplate(
-                    markupObjects[markupIter].data[dataIter],
-                    templateObject.template
-                );
-                
-                if(dataObjectAdditionIsError)
-                {
-                    return [true, dataObjectAdditionResult];
-                }
-                markupObjects[markupIter].data[dataIter] = dataObjectAdditionResult;
-                
-                //Now remove the tags from the template
-                let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
-                
-                if(additionTagsRemovalIsError) 
-                {
-                    //This shouldn't error if the additions didn't, but will check just in case of unforseen bugs
-                    return [true, additionTagsRemovalResult];
-                }
-                templateObject.template = additionTagsRemovalResult;
-                
-                
-                
-                
-                //Populate the template with the data values
-                let [thisIterationResultIsError, thisIterationResultText] = populateTemplate(
-                    markupObjects[markupIter].data[dataIter],
-                    templateObject.name,
-                    templateObject.template
-                );
-                
-                if(thisIterationResultIsError)
-                {
-                    return [
-                        true,
-                        thisIterationResultText
-                    ];
-                }
-                
-                
-                
-                
-                //Now we need to check if there's any embedded template calls,
-                //and resolve them.
-                errPreText = "Encountered a problem parsing call to embedded template: ";
-                
-                const [innerTemplateResolveIsError, innerTemplateResolveResultText] = resolveInnerTemplateCalls(
-                    thisIterationResultText,
-                    markupObjects[markupIter].data[dataIter], //We only want the current data object here
-                    templateObjects //all the templates
-                );
-                
-                if(innerTemplateResolveIsError)
-                {
-                    return [
-                        true,
-                        innerTemplateResolveResultText
-                    ];
-                }
-                thisIterationResultText = innerTemplateResolveResultText;
-                
-                
-                
-                //Finally, add to the result to be returned.
-                resultText += thisIterationResultText;
-            }
+            
+            let [dataObjectsResultIsError, dataObjectsResultText] = feedDataObjectsIntoTemplate(
+                templateObject, 
+                markupObjects[markupIter], 
+                templateObjects
+            );
+            if(dataObjectsResultIsError) return [true, dataObjectsResultText];
+            
+            
+            resultText += dataObjectsResultText;
         }
+        
     }
     catch(err)
     {

@@ -121,11 +121,9 @@ test("scriptKnapperMain will return an error if the given markup or template JSO
 
 test("scriptKnapperMain will return an error caught by the checkForMarkupObjectError function", () => {
     
-    const templateName = "simpleTemplate";
-    
-    //No data
+    //No template
     const markup = {
-        template: templateName
+        data: [{}]
     };
     
     const markupObjects = JSON.stringify([markup]);
@@ -140,71 +138,6 @@ test("scriptKnapperMain will return an error caught by the checkForMarkupObjectE
 
 // --------------------------------------------------------------------------------------
 
-test("scriptKnapperMain will insert data that has been passed down from another template", () => {
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1", 
-                data2: '{{: "template": "templateLayer2", "data": [{"data1": "hello, {:data3:}"}] :}}',
-                data3: "theData3" 
-            }
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).toContain("hello, theData3");
-});
-
-test("scriptKnapperMain will resolve a parameter call correctly following more than one template call.", () => {
-    
-    //This was a debug in version 1.0, so adding this.
-    //If this test fails, check populateTemplate() and see how
-    // it is positioning the searchStartIndex after finding a 
-    // template call
-    
-    const templateName = "simpleTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: '{{: "template": "templateLayer2", "data": [{"data1": "theData1"}] :}}', 
-                data2: '{{: "template": "templateLayer2", "data": [{"data1": "theData2"}] :}}',
-                data3: "theData3"
-            }
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).toContain("theData1");
-    expect(resultText).toContain("theData2");
-    expect(resultText).toContain("theData3");
-});
-
-
-// --------------------------------------------------------------------------------------------------
 
 test("scriptKnapperMain will not return {:, :}, {{:, :}}, {+ or +} if @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @chb+ haven't been used", () => {
     
@@ -278,49 +211,3 @@ test("scriptKnapperMain will replace @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @ch
 
 // -----------------------------------------------------------------
 
-test("scriptKnapperMain will call addDataObjectAdditionsFromTemplate() to add template data-additions to the data object", () => {
-    
-    const templateName = "dataAdditionTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: []
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).not.toContain('{+ "testProp": "test" +}');
-    expect(resultText).toContain("test");
-    
-});
-
-test("scriptKnapperMain will return an error if addDataObjectAdditionsFromTemplate() returns an error", () => {
-    
-    const templateName = "badDataAdditionTemplate";
-    
-    const markup = {
-        template: templateName,
-        data: []
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
-});
