@@ -1,7 +1,7 @@
 import findObjectStringLength from '../findObjectStringLength/findObjectStringLength';
 import mergeObjects from '../mergeObjects/mergeObjects';
 import prepareErrorMessage from '../prepareErrorMessage/prepareErrorMessage';
-import scriptKnapperMain from '../scriptKnapperMain/scriptKnapperMain';
+import resolveAllMarkupObjects from '../resolveAllMarkupObjects/resolveAllMarkupObjects';
 
 /*
     Inputs:
@@ -75,9 +75,9 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
             
             //Now feed the data and template objects back through this process,
             //to be treated like a regular template call.
-            let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
-                JSON.stringify([mergedDataObject]),
-                JSON.stringify(templateObjects)
+            let [embeddedTemplateResultIsError, embeddedTemplateResultText] = resolveAllMarkupObjects(
+                [mergedDataObject], 
+                templateObjects
             );
             
             if(embeddedTemplateResultIsError)
