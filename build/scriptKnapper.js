@@ -3,9 +3,8 @@
 The entry point for UIs to use is scriptKnapperMain():
 
 scriptKnapperMain Inputs:
- - markupObjectsJSON: This is the JSON with the data to be entered into the template.
- - templateObjectsJSON: This is the JSON which is used when generating errors.
- - isInnerTemplate: A boolean value. Is this call for a template within a template?
+ - markupObjectsJSON: This is the JSON with the data to be entered into the templates.
+ - templateObjectsJSON: This is the JSON containing all of the template objects.
 
 scriptKnapperMain Output:
  - This function will return an array with 2 values, to be destructured by the caller.
@@ -125,6 +124,81 @@ function checkForMarkupObjectError(markupObject, templateObjects)
 
 
 
+function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateObjects)
+{
+    let resultText = "";
+    let errDataJSON = "No data JSON is available for this exception."; 
+    let errPreText = "Error when attempting to feed data into a template: "; 
+    
+    try 
+    {
+        for(let dataIter = 0; dataIter < markupObject.data.length; dataIter++)
+        {
+            errDataJSON = JSON.stringify([markupObject.data[dataIter]]);
+            
+            
+            let [dataObjectAdditionIsError, dataObjectAdditionResult] = addDataObjectAdditionsFromTemplate(
+                markupObject.data[dataIter],
+                templateObject.template
+            );
+            if(dataObjectAdditionIsError) return [true, dataObjectAdditionResult];
+            
+            markupObject.data[dataIter] = dataObjectAdditionResult;
+            
+            
+            
+            let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
+            if(additionTagsRemovalIsError) return [true, additionTagsRemovalResult];
+            
+            templateObject.template = additionTagsRemovalResult;
+            
+            
+            
+            
+            
+            let [thisIterationResultIsError, thisIterationResultText] = populateTemplateWithGivenData(
+                markupObject.data[dataIter],
+                templateObject.name,
+                templateObject.template
+            );
+            if(thisIterationResultIsError) return [true, thisIterationResultText];
+            
+            
+            
+            
+            
+            errPreText = "Encountered a problem parsing a call to an embedded template: ";
+            
+            const [innerTemplateResolveIsError, innerTemplateResolveResultText] = resolveInnerTemplateCalls(
+                thisIterationResultText,
+                markupObject.data[dataIter], 
+                allTemplateObjects 
+            );
+            if(innerTemplateResolveIsError) return [true, innerTemplateResolveResultText];
+            
+            
+            
+            resultText += innerTemplateResolveResultText;
+        }
+    }
+    catch(err)
+    {
+        return [
+            true,
+            prepareErrorMessage(errPreText + err, templateObject.name, errDataJSON)
+        ];
+    }
+    
+    
+    
+    return [false, resultText];
+}
+
+
+
+
+
+
 function findObjectStringLength(objectText)
 {
     if(objectText.length < 2 || objectText.charAt(0) !== "{")
@@ -191,7 +265,7 @@ function mergeObjects(objects)
 
 
 
-function populateTemplate(dataObject, templateName, template)
+function populateTemplateWithGivenData(dataObject, templateName, template)
 {
     let resultText = template;
     let resultIsError = false;
@@ -358,13 +432,182 @@ function replaceSubstrings(text, replacements)
 
 
 
-function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTemplate = false)
+function replaceTagStringSubstitutions(text)
 {
-    let resultIsError = false;
+    return replaceSubstrings(text, [
+        { from: "@ohb:", to: "{:" },
+        { from: "@chb:", to: ":}" },
+        { from: "@odhb:", to: "{{:" },
+        { from: "@cdhb:", to: ":}}" },
+        { from: "@ohb+", to: "{+" },
+        { from: "@chb+", to: "+}" },
+    ]);
+}
+
+
+
+
+
+
+function resolveAllMarkupObjects(markupObjects, templateObjects)
+{
+    let resultText = "";
+    let errTemplateName = ""; 
+    let errDataObject; 
+    
+    try
+    {
+        for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
+        {
+            
+            let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
+            
+            
+            errTemplateName = templateObject.name;
+            errDataObject = markupObjects[markupIter].data;
+            
+            
+            
+            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
+            if(markupHasError) return [true, markupCheckText];
+            
+            
+            
+            
+            
+            if(!markupObjects[markupIter].hasOwnProperty("data") || markupObjects[markupIter].data.length === 0)
+            {
+                markupObjects[markupIter].data = [{}];
+            }
+            
+            let [dataObjectsResultIsError, dataObjectsResultText] = feedDataObjectsIntoTemplate(
+                templateObject, 
+                markupObjects[markupIter], 
+                templateObjects
+            );
+            if(dataObjectsResultIsError) return [true, dataObjectsResultText];
+            
+            
+            resultText += dataObjectsResultText;
+        }
+    }
+    catch(err)
+    {
+        const errPreText = "Error when generating a markup object's instructions: "
+        
+        return [
+            true,
+            prepareErrorMessage(
+                errPreText + err, 
+                errTemplateName,
+                JSON.stringify(errDataObject)
+            )
+        ];
+    }
+    
+    return [false, resultText];
+}
+
+
+
+
+
+
+
+function resolveInnerTemplateCalls(thisIterationResultText, dataObject, templateObjects)
+{
+    let braceIndex; 
+    let objectLength; 
+    let errPreText = "Error handling embedded template call: "; 
+    
+    while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
+    {
+        objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex));
+        if(objectLength === -1)
+        {
+            return [
+                true,
+                prepareErrorMessage(
+                    errPreText + "Embedded template object is invalid or incomplete.", 
+                    "Unable to determine the template called within an embedded template call.",
+                    JSON.stringify(dataObject)
+                )
+            ];
+        }
+        else
+        {
+            let innerMarkupObject; 
+            try
+            {
+                
+                
+                innerMarkupObject = JSON.parse(
+                    "{" + thisIterationResultText.substring(braceIndex + 3, braceIndex + objectLength - 3) + "}"
+                );
+            }
+            catch(err)
+            {
+                return [
+                    true,
+                    prepareErrorMessage(
+                        errPreText + "Embedded template object is invalid.", 
+                        "Unable to determine the template called within an embedded template call.",
+                        JSON.stringify(dataObject)
+                    )
+                ];
+            }
+            
+            
+            let mergedDataObject = { template: innerMarkupObject.template, data: [] };
+            for(let i = 0; i < innerMarkupObject.data.length; i++)
+            {
+                mergedDataObject.data[i] = mergeObjects([
+                    innerMarkupObject.data[i], 
+                    dataObject
+                ]);
+            }
+            
+            
+            
+            let [embeddedTemplateResultIsError, embeddedTemplateResultText] = resolveAllMarkupObjects(
+                [mergedDataObject], 
+                templateObjects
+            );
+            
+            if(embeddedTemplateResultIsError)
+            {
+                return [
+                    true,
+                    embeddedTemplateResultText
+                ];
+            }
+            else
+            {
+                
+                thisIterationResultText = 
+                    thisIterationResultText.substring(0, braceIndex) + 
+                    embeddedTemplateResultText +
+                    thisIterationResultText.substring(braceIndex + objectLength);
+            }
+        }
+    }
+    
+    
+    return [
+        false,
+        thisIterationResultText
+    ];
+}
+
+
+
+
+
+
+function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
+{
     let resultText = "";
     let errPreText; 
-    let errTemplateName = ""; 
-    let errDataJSON = ""; 
     
     
     let markupObjects, templateObjects;
@@ -381,165 +624,31 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON, isInnerTempla
         
         
         
-        for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
-        {
-            
-            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
-            if(markupHasError)
-            {
-                return [
-                    true,
-                    markupCheckText
-                ];
-            }
-            
-            
-            
-            
-            let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
-            errTemplateName = templateObject.name;
-            if(!markupObjects[markupIter].hasOwnProperty("data") || markupObjects[markupIter].data.length === 0) 
-            {
-                markupObjects[markupIter].data = [{}];
-            }
-            
-            for(let dataIter = 0; dataIter < markupObjects[markupIter].data.length; dataIter++)
-            {
-                errDataJSON = JSON.stringify([markupObjects[markupIter].data[dataIter]]);
-                
-                
-                let [dataObjectAdditionIsError, dataObjectAdditionResult] = addDataObjectAdditionsFromTemplate(
-                    markupObjects[markupIter].data[dataIter],
-                    templateObject.template
-                );
-                
-                if(dataObjectAdditionIsError)
-                {
-                    return [true, dataObjectAdditionResult];
-                }
-                markupObjects[markupIter].data[dataIter] = dataObjectAdditionResult;
-                
-                
-                let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
-                
-                if(additionTagsRemovalIsError) 
-                {
-                    
-                    return [true, additionTagsRemovalResult];
-                }
-                templateObject.template = additionTagsRemovalResult;
-                
-                
-                
-                
-                
-                let [thisIterationResultIsError, thisIterationResultText] = populateTemplate(
-                    markupObjects[markupIter].data[dataIter],
-                    templateObject.name,
-                    templateObject.template
-                );
-                
-                if(thisIterationResultIsError)
-                {
-                    return [
-                        true,
-                        thisIterationResultText
-                    ];
-                }
-                
-                
-                
-                
-                
-                
-                let braceIndex;
-                let objectLength;
-                while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
-                {
-                    errPreText = "Encountered a problem parsing call to embedded template: ";
-                    
-                    objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex));
-                    if(objectLength === -1)
-                    {
-                        throw "Embedded template object is invalid or incomplete.";
-                    }
-                    else
-                    {
-                        
-                        
-                        let innerMarkupObject = JSON.parse(
-                            "{" + thisIterationResultText.substring(braceIndex + 3, braceIndex + objectLength - 3) + "}"
-                        );
-                        
-                        
-                        let mergedDataObject = { template: innerMarkupObject.template, data: [] };
-                        for(let i = 0; i < innerMarkupObject.data.length; i++)
-                        {
-                            mergedDataObject.data[i] = mergeObjects([
-                                innerMarkupObject.data[i], 
-                                markupObjects[markupIter].data[dataIter]
-                            ]);
-                        }
-                        
-                        let [embeddedTemplateResultIsError, embeddedTemplateResultText] = scriptKnapperMain(
-                            JSON.stringify([mergedDataObject]),
-                            templateObjectsJSON,
-                            true
-                        );
-                        
-                        if(embeddedTemplateResultIsError)
-                        {
-                            return [
-                                true,
-                                embeddedTemplateResultText
-                            ];
-                        }
-                        else
-                        {
-                            
-                            thisIterationResultText = 
-                                thisIterationResultText.substring(0, braceIndex) + 
-                                embeddedTemplateResultText +
-                                thisIterationResultText.substring(braceIndex + objectLength);
-                        }
-                    }
-                }
-                
-                
-                
-                
-                
-                resultText += thisIterationResultText;
-            }
-        }
+        let [resolveMarkupIsError, resolveMarkupText] = resolveAllMarkupObjects(markupObjects, templateObjects);
+        if(resolveMarkupIsError) return [true, resolveMarkupText];
+        
+        resultText = resolveMarkupText;
     }
     catch(err)
     {
         return [
             true,
-            prepareErrorMessage(errPreText + err, errTemplateName, errDataJSON)
+            prepareErrorMessage(
+                errPreText + err, 
+                "No template name is available for this error.", 
+                "No data JSON is available for this error."
+            )
         ];
     }
     
     
     
     
+    resultText = replaceTagStringSubstitutions(resultText);
     
-    if(!resultIsError && !isInnerTemplate)
-    {
-        resultText = replaceSubstrings(resultText, [
-            { from: "@ohb:", to: "{:" },
-            { from: "@chb:", to: ":}" },
-            { from: "@odhb:", to: "{{:" },
-            { from: "@cdhb:", to: ":}}" },
-            { from: "@ohb+", to: "{+" },
-            { from: "@chb+", to: "+}" },
-        ]);
-    }
     
-    return [resultIsError, resultText];
+    return [false, resultText];
 }
-
 
 
 
