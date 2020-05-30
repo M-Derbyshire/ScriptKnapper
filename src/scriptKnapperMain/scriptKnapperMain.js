@@ -1,6 +1,6 @@
 import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
-import replaceSubstrings from './../replaceSubstrings/replaceSubstrings';
 import resolveAllMarkupObjects from '../resolveAllMarkupObjects/resolveAllMarkupObjects';
+import replaceTagStringSubstitutions from '../replaceTagStringSubstitutions/replaceTagStringSubstitutions';
 
 /*
     Inputs:
@@ -57,15 +57,8 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
     
     
     
-    //Now, finally, change any tag string replacements in the template into the correct tag string.
-    resultText = replaceSubstrings(resultText, [
-        { from: "@ohb:", to: "{:" },
-        { from: "@chb:", to: ":}" },
-        { from: "@odhb:", to: "{{:" },
-        { from: "@cdhb:", to: ":}}" },
-        { from: "@ohb+", to: "{+" },
-        { from: "@chb+", to: "+}" },
-    ]);
+    //Now, finally, change any tag string substitions in the result text into the correct tag string.
+    resultText = replaceTagStringSubstitutions(resultText);
     
     
     return [false, resultText];

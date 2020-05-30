@@ -48,39 +48,7 @@ test("scriptKnapperMain will return an error if the given markup or template JSO
 
 // --------------------------------------------------------------------------------------
 
-
-test("scriptKnapperMain will not return {:, :}, {{:, :}}, {+ or +} if @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @chb+ haven't been used", () => {
-    
-    const templateName = "templateLayer2"; //This template doesn't use @ohb/@chb
-    
-    const markup = {
-        template: templateName,
-        data: [
-            { 
-                data1: "theData1"
-            }
-        ]
-    };
-    
-    const markupObjects = JSON.stringify([
-        markup
-    ]);
-    
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    expect(resultText).not.toContain("{:");
-    expect(resultText).not.toContain(":}");
-    expect(resultText).not.toContain("{{:");
-    expect(resultText).not.toContain(":}}");
-    expect(resultText).not.toContain("{+");
-    expect(resultText).not.toContain("+}");
-});
-
-test("scriptKnapperMain will replace @ohb:, @chb:, @odhb:, @cdhb:, @ohb+, or @chb+ in the template or data with the correct string", () => {
+test("scriptKnapperMain will call replaceTagStringSubstitutions() and return the replacements", () => {
     
     const templateName = "simpleTemplate";
     
