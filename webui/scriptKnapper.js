@@ -18,6 +18,8 @@ Changes in this build:
  - The replaceSubstrings() function can now accept values that contain Regex special characters.
  - Major refactor of scriptKnapperMain(), which was a bloated function.
  - If calling a template that doesn't require any data, the user no longer needs to pass in an empty array -- or any data property at all.
+ - findObjectStringLength() now takes in the opening and closing brace strings as parameters, to ensure that any handlebar braces used within any data values will not confuse the function.
+ - If a template is called, but it doesn't exist (or there are more than one template with that name), then a specific message is returned (rather than just the exception's message).
 
 -----------------------------------------------------------
 
@@ -44,7 +46,11 @@ function addDataObjectAdditionsFromTemplate(dataObject, template)
     {
         braceIndex = currentlyUnsearchedString.indexOf("{+");
         
-        let objectLength = findObjectStringLength(currentlyUnsearchedString.substring(braceIndex, currentlyUnsearchedString.length));
+        let objectLength = findObjectStringLength(
+            currentlyUnsearchedString.substring(braceIndex, currentlyUnsearchedString.length),
+            "{+",
+            "+}"
+        );
         if(objectLength < 0) 
         {
             return [true, errPreText + "Data addition tag was not properly closed."];
@@ -147,10 +153,9 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             
             
             
+            
             let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
             if(additionTagsRemovalIsError) return [true, additionTagsRemovalResult];
-            
-            templateObject.template = additionTagsRemovalResult;
             
             
             
@@ -159,7 +164,7 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             let [thisIterationResultIsError, thisIterationResultText] = populateTemplateWithGivenData(
                 markupObject.data[dataIter],
                 templateObject.name,
-                templateObject.template
+                additionTagsRemovalResult
             );
             if(thisIterationResultIsError) return [true, thisIterationResultText];
             
@@ -199,34 +204,28 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
 
 
 
-function findObjectStringLength(objectText)
+function findObjectStringLength(objectText, startBraceString = "{", endBraceString = "}")
 {
-    if(objectText.length < 2 || objectText.charAt(0) !== "{")
-    {
-        return -1;
-    }
+    if(!objectText.startsWith(startBraceString)) return -1;
     
     
     let layer = 0; 
                     
-    let currentChar = "";
     let i = 0; 
     
     while(i < objectText.length)
     {
-        currentChar = objectText.charAt(i);
-        
-        if(currentChar == "{")
+        if(objectText.substr(i, startBraceString.length) == startBraceString)
         {
             layer++;
         }
-        else if (currentChar == "}")
+        else if (objectText.substr(i, endBraceString.length) == endBraceString)
         {
             layer--;
             
             if(layer === 0)
             {
-                return i + 1; 
+                return i + endBraceString.length; 
             }
         }
         
@@ -295,7 +294,7 @@ function populateTemplateWithGivenData(dataObject, templateName, template)
             let objectLength;
             if(resultText.charAt(braceIndex - 1) === "{") 
             {
-                objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex - 1), "{{:", ":}}");
                 
                 if(objectLength === -1)
                 {
@@ -308,7 +307,7 @@ function populateTemplateWithGivenData(dataObject, templateName, template)
             }
             else
             {
-                objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex), "{:", ":}");
                 
                 if(objectLength === -1)
                 {
@@ -393,7 +392,11 @@ function removeDataAdditionTags(templateString)
     {
         braceIndex = templateString.indexOf("{+");
         
-        objectLength = findObjectStringLength(templateString.substring(braceIndex, templateString.length));
+        objectLength = findObjectStringLength(
+            templateString.substring(braceIndex, templateString.length),
+            "{+",
+            "+}"
+        );
         if(objectLength < 0) 
         {
             return [true, errPreText + "Data addition tag was not properly closed."];
@@ -454,13 +457,19 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
     let resultText = "";
     let errTemplateName = ""; 
     let errDataObject; 
+    let templateObject; 
+    let matchingTemplateObjects; 
+                                 
     
     try
     {
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
             
-            let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
+            matchingTemplateObjects = templateObjects.filter(template => (template.hasOwnProperty("name") && template.name === markupObjects[markupIter].template));
+            if(matchingTemplateObjects.length === 0) throw "The requested template (" + markupObjects[markupIter].template + ") has not been provided.";
+            if(matchingTemplateObjects.length > 1) throw "Multiple templates named " + markupObjects[markupIter].template + " have been provided.";
+            templateObject = matchingTemplateObjects[0];
             
             
             errTemplateName = templateObject.name;
@@ -522,7 +531,7 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
     
     while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
     {
-        objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex));
+        objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex), "{{:", ":}}");
         if(objectLength === -1)
         {
             return [
