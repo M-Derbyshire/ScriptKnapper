@@ -1,6 +1,7 @@
 import feedDataObjectsIntoTemplate from './feedDataObjectsIntoTemplate';
 
-const templateObjects = JSON.parse(String.raw`[
+//This is purposefull set to let (one of the tests checks that a template value has not been changed)
+let templateObjects = JSON.parse(String.raw`[
     {"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},
     {"name": "templateLayer2","template": "this is some more data here: {:data1:}"},
     {"name": "noDataTemplate","template": "I dont need any data."}, 
@@ -155,4 +156,27 @@ test("feedDataObjectsIntoTemplate will return an error returned by resolveInnerT
     
     expect(resultError).toBeTruthy();
     
+});
+
+// -------------------------------------------------------------------------------------
+
+test("feedDataObjectsIntoTemplate will not remove the actual addition tag from the template object's string", () => {
+    
+    const templateName = "dataAdditionTemplate";
+    
+    let thisTemplateObject = templateObjects.filter((template) => template.name === templateName)[0];
+    
+    const markupObjects = {
+        template: templateName,
+        data: [{}]
+    };
+    
+    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeFalsy();
+    expect(thisTemplateObject.template).toContain("{+");
+    expect(thisTemplateObject.template).toContain("+}");
 });

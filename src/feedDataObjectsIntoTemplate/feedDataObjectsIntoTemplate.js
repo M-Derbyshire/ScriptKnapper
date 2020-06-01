@@ -46,12 +46,11 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             
             markupObject.data[dataIter] = dataObjectAdditionResult;
             
-            //Now remove the data addition tags from the template.
+            //Now remove the data addition tags from the template string.
+            //(DON'T REPLACE the templateObject.template here, as it affects later calls to the template!)
             //This shouldn't error if the adding the additions didn't, but will check just in case of unforseen bugs
             let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
             if(additionTagsRemovalIsError) return [true, additionTagsRemovalResult];
-            
-            templateObject.template = additionTagsRemovalResult;
             
             
             
@@ -60,7 +59,7 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             let [thisIterationResultIsError, thisIterationResultText] = populateTemplateWithGivenData(
                 markupObject.data[dataIter],
                 templateObject.name,
-                templateObject.template
+                additionTagsRemovalResult
             );
             if(thisIterationResultIsError) return [true, thisIterationResultText];
             
