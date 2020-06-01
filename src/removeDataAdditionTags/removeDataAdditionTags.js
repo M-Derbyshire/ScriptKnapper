@@ -22,7 +22,11 @@ function removeDataAdditionTags(templateString)
     {
         braceIndex = templateString.indexOf("{+");
         
-        objectLength = findObjectStringLength(templateString.substring(braceIndex, templateString.length));
+        objectLength = findObjectStringLength(
+            templateString.substring(braceIndex, templateString.length),
+            "{+",
+            "+}"
+        );
         if(objectLength < 0) //-1 means an error
         {
             return [true, errPreText + "Data addition tag was not properly closed."];

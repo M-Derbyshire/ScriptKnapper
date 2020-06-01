@@ -2,11 +2,11 @@ import findObjectStringLength from './findObjectStringLength';
 
 test("findObjectStringLength will return the correct length of the object in a string", ()=> {
     
-    const objectText = "{: 'data': { 'a': 'hello', 'b': 'goodbye' } :} goodbye";
+    const objectText = "{: 'data': { 'a': '{:hello:}', 'b': '{:goodbye':} } :} goodbye";
     
-    const result = findObjectStringLength(objectText);
+    const result = findObjectStringLength(objectText, "{:", ":}");
     
-    expect(result).toBe(46);
+    expect(result).toBe(objectText.length - 8); //Minus the goodbye at the end
     
 });
 
@@ -14,9 +14,9 @@ test("findObjectStringLength will return the correct length of the object in a s
 
 test("findObjectStringLength will return -1 if given an incomplete object string", ()=> {
     
-    const objectText = "{: 'data': { 'a': 'hello', 'b': 'goodbye' :}";
+    const objectText = "{: 'data': { 'a': 'hello', 'b': '{:goodbye' } :}";
     
-    const result = findObjectStringLength(objectText);
+    const result = findObjectStringLength(objectText, "{:", ":}");
     
     expect(result).toBe(-1);
     
@@ -27,8 +27,8 @@ test("findObjectStringLength will return -1 if given an empty string, or one wit
     const objectText1 = "hello";
     const objectText2 = "";
     
-    const result1 = findObjectStringLength(objectText1);
-    const result2 = findObjectStringLength(objectText2);
+    const result1 = findObjectStringLength(objectText1, "{:", ":}");
+    const result2 = findObjectStringLength(objectText2, "{:", ":}");
     
     expect(result1).toBe(-1);
     expect(result2).toBe(-1);
@@ -41,7 +41,7 @@ test("findObjectStringLength will return the correct length for a given single-l
     
     const objectText = "{ 'foo': 'hello', 'bar': 'bye' }";
     
-    const result = findObjectStringLength(objectText);
+    const result = findObjectStringLength(objectText, "{", "}");
     
     expect(result).toBe(objectText.length);
     
@@ -51,7 +51,7 @@ test("findObjectStringLength will return the correct length for a given multi-la
     
     const objectText = "{ 'foo': { 'bar': { 'baz': 'hello' } } }";
     
-    const result = findObjectStringLength(objectText);
+    const result = findObjectStringLength(objectText, "{", "}");
     
     expect(result).toBe(objectText.length);
     

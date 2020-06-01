@@ -51,7 +51,7 @@ function populateTemplateWithGivenData(dataObject, templateName, template)
             let objectLength;
             if(resultText.charAt(braceIndex - 1) === "{") //Is this a double brace (template call)?
             {
-                objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex - 1), "{{:", ":}}");
                 
                 if(objectLength === -1)
                 {
@@ -64,7 +64,7 @@ function populateTemplateWithGivenData(dataObject, templateName, template)
             }
             else
             {
-                objectLength = findObjectStringLength(resultText.substring(braceIndex));
+                objectLength = findObjectStringLength(resultText.substring(braceIndex), "{:", ":}");
                 
                 if(objectLength === -1)
                 {

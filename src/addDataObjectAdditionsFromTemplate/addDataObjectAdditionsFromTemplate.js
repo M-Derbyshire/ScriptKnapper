@@ -27,7 +27,11 @@ function addDataObjectAdditionsFromTemplate(dataObject, template)
     {
         braceIndex = currentlyUnsearchedString.indexOf("{+");
         
-        let objectLength = findObjectStringLength(currentlyUnsearchedString.substring(braceIndex, currentlyUnsearchedString.length));
+        let objectLength = findObjectStringLength(
+            currentlyUnsearchedString.substring(braceIndex, currentlyUnsearchedString.length),
+            "{+",
+            "+}"
+        );
         if(objectLength < 0) //-1 means an error
         {
             return [true, errPreText + "Data addition tag was not properly closed."];

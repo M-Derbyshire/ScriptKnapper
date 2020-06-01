@@ -28,7 +28,7 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
     
     while((braceIndex = thisIterationResultText.indexOf("{{:")) > -1)
     {
-        objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex));
+        objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex), "{{:", ":}}");
         if(objectLength === -1)
         {
             return [
