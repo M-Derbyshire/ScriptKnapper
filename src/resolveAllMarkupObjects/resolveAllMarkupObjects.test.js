@@ -112,3 +112,40 @@ test("resolveAllMarkupObjects will return an error if feedDataObjectsIntoTemplat
     expect(resultError).toBeTruthy();
     
 });
+
+test("resolveAllMarkupObjects will return an error if the template name provided isn't found", () => {
+    
+    const markupObjects = [{
+        template: "iDontExist",
+        data: [{}]
+    }];
+    
+    const [resultError, resultText] = resolveAllMarkupObjects(markupObjects, templateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeTruthy();
+    expect(resultText).toContain("The requested template (" + markupObjects[0].template + ") has not been provided.");
+});
+
+test("resolveAllMarkupObjects will return an error if the template name is found more than once in templateObjects", () => {
+    
+    const markupObjects = [{
+        template: "multiple",
+        data: [{}]
+    }];
+    
+    const newtemplateObjects = [
+        { name: "multiple", template: "test1"},
+        { name: "multiple", template: "test2"},
+    ];
+    
+    const [resultError, resultText] = resolveAllMarkupObjects(markupObjects, newtemplateObjects);
+    
+    expect(typeof resultError).toBe("boolean");
+    expect(typeof resultText).toBe("string");
+    
+    expect(resultError).toBeTruthy();
+    expect(resultText).toContain("Multiple templates named " + markupObjects[0].template + " have been provided.");
+});

@@ -24,13 +24,19 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
     let resultText = "";
     let errTemplateName = ""; //The current template name to feed into prepareErrorMessage()
     let errDataObject; // the current data object to feed into prepareErrorMessage()
+    let templateObject; //The template object for each markup object
+    let matchingTemplateObjects; //The template objects that match the template name in the markup object 
+                                 //(Should only ever be one).
     
     try
     {
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
             //Get the correct template object for this markup object
-            let templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
+            matchingTemplateObjects = templateObjects.filter(template => (template.hasOwnProperty("name") && template.name === markupObjects[markupIter].template));
+            if(matchingTemplateObjects.length === 0) throw "The requested template (" + markupObjects[markupIter].template + ") has not been provided.";
+            if(matchingTemplateObjects.length > 1) throw "Multiple templates named " + markupObjects[markupIter].template + " have been provided.";
+            templateObject = matchingTemplateObjects[0];
             
             //Update the objects that will be fed into prepareErrorMessage()
             errTemplateName = templateObject.name;
