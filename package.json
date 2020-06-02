@@ -4,7 +4,7 @@
   "description": "A javascript library for code/script generation, with JSON defined templates",
   "main": "build/scriptKnapper.js",
   "scripts": {
-    "test": "react-scripts test"
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -24,8 +24,15 @@
     "url": "https://github.com/M-Derbyshire/ScriptKnapper/issues"
   },
   "homepage": "https://github.com/M-Derbyshire/ScriptKnapper#readme",
-  "dependencies": {
-    "react-scripts": "^3.4.1",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-jest": "^26.0.1",
+    "jest": "^26.0.1",
     "readline-sync": "^1.4.10"
+  },
+  "transform": {
+    "^.+\\.[t|j]sx?$": "babel-jest"
   }
 }
