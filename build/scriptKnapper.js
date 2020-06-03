@@ -1,5 +1,8 @@
 /*
 
+ScriptKnapper version: 2.0
+
+
 The entry point for UIs to use is scriptKnapperMain():
 
 scriptKnapperMain Inputs:

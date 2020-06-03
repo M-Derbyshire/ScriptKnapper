@@ -121,10 +121,10 @@ srcFiles.forEach((currentFile) => {
 
 
 
-//We want to add in the lines for the opening comment.
+//We want to add in the lines for the opening comment (and also the build version).
 //Technically it's not necessary to split the opening comment into lines, but we will so that the
 //buildLines array still contains what its name says it does.
-buildLines.unshift("/*\n", ...config.openingComment.split(/\r?\n/), "\n*/");
+buildLines.unshift("/*\n", `ScriptKnapper version: ${config.version}\n\n`, ...config.openingComment.split(/\r?\n/), "\n*/");
 logIfNotSilent("Build file is now ready to be saved.");
 
 
