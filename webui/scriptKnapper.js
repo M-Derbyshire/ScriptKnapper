@@ -22,7 +22,6 @@ Changes in this build:
  - Major refactor of scriptKnapperMain(), which was a bloated function.
  - If calling a template that doesn't require any data, the user no longer needs to pass in an empty array -- or any data property at all.
  - findObjectStringLength() now takes in the opening and closing brace strings as parameters, to ensure that any handlebar braces used within any data values will not confuse the function.
- - If a template is called, but it doesn't exist (or there are more than one template with that name), then a specific message is returned (rather than just the exception's message).
 
 -----------------------------------------------------------
 
@@ -469,19 +468,19 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
             
-            matchingTemplateObjects = templateObjects.filter(template => (template.hasOwnProperty("name") && template.name === markupObjects[markupIter].template));
-            if(matchingTemplateObjects.length === 0) throw "The requested template (" + markupObjects[markupIter].template + ") has not been provided.";
-            if(matchingTemplateObjects.length > 1) throw "Multiple templates named " + markupObjects[markupIter].template + " have been provided.";
-            templateObject = matchingTemplateObjects[0];
+            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
+            if(markupHasError) return [true, markupCheckText];
+            
+            
+            
+            
+            
+            templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
             
             
             errTemplateName = templateObject.name;
             errDataObject = markupObjects[markupIter].data;
             
-            
-            
-            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
-            if(markupHasError) return [true, markupCheckText];
             
             
             

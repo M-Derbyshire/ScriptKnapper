@@ -32,20 +32,20 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
     {
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
+            //Check for any errors in the markup object
+            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
+            if(markupHasError) return [true, markupCheckText];
+            
+            
+            
             //Get the correct template object for this markup object
-            matchingTemplateObjects = templateObjects.filter(template => (template.hasOwnProperty("name") && template.name === markupObjects[markupIter].template));
-            if(matchingTemplateObjects.length === 0) throw "The requested template (" + markupObjects[markupIter].template + ") has not been provided.";
-            if(matchingTemplateObjects.length > 1) throw "Multiple templates named " + markupObjects[markupIter].template + " have been provided.";
-            templateObject = matchingTemplateObjects[0];
+            //(checkForMarkupObjectError() has already confirmed this template exists)
+            templateObject = templateObjects.filter(template => (template.name === markupObjects[markupIter].template))[0];
             
             //Update the objects that will be fed into prepareErrorMessage()
             errTemplateName = templateObject.name;
             errDataObject = markupObjects[markupIter].data;
             
-            
-            
-            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
-            if(markupHasError) return [true, markupCheckText];
             
             
             //Populate the template with the provided data, and add to the result
