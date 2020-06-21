@@ -248,13 +248,10 @@ function mergeObjects(objects)
     
     for(let objIter = 0; objIter < objects.length; objIter++)
     {
-        for(let prop in objects[objIter])
-        {
-            if(!resultObject.hasOwnProperty(prop))
-            {
-                resultObject[prop] = objects[objIter][prop];
-            }
-        }
+        resultObject = {
+            ...objects[objIter],
+            ...resultObject
+        };
     }
     
     return resultObject;
