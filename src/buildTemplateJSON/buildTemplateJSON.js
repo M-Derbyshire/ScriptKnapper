@@ -10,7 +10,7 @@ import replaceSubStrings from '../replaceSubStrings/replaceSubStrings';
     Output:
         - This function will return a JSON string, which will contain all of the
 			given templates, in the structure required by scriptKnapperMain(). 
-			If templatesAlreadyPrepared is true, double quote characters will be 
+			If templatesAlreadyPrepared is false, double quote characters will be 
 			escaped, and whitespace characters (such as tabs and new-lines, 
 			but not spaces) will be replaced with escape codes.
     
