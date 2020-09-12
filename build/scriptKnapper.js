@@ -129,7 +129,7 @@ function buildTemplateJSON(templates, templatesAlreadyPrepared = false)
 		
 		if(!templatesAlreadyPrepared)
 		{
-			templateText = replaceSubStrings(
+			templateText = replaceSubstrings(
 				templateText,
 				[
 					{ from: "\t", to: String.raw`\t` },
