@@ -36,77 +36,39 @@ function transpileClickAction()
 
 
 // The onClick method for the Prepare a String tool's button.
-// This will use the replaceSubstrings function in the
+// This will use the prepareTemplateString function in the
 // library to make the requested changes to the provided
 // string.
 function prepareStringClickAction()
 {
-    let skReplaceSubStrings = replaceSubstrings; //In the scriptKnapper library
-    let stringInput = document.getElementById("prepareStringInput");
-    let stringOutput = document.getElementById("prepareStringOutput");
+    const skPrepareTemplateString = prepareTemplateString; //In the scriptKnapper library
+    const stringInput = document.getElementById("prepareStringInput");
+    const stringOutput = document.getElementById("prepareStringOutput");
     
     
-    let whitespaceDropdown = document.getElementById("prepareStringWhitespaceDropdown");
-    let escapeDoubleQuotes = document.getElementById("prepareStringEscapeDoubleQuotes");
-    let replaceTags = document.getElementById("prepareStringReplaceTags");
+    const whitespaceDropdown = document.getElementById("prepareStringWhitespaceDropdown");
+    const escapeDoubleQuotes = document.getElementById("prepareStringEscapeDoubleQuotes");
+    const replaceTags = document.getElementById("prepareStringReplaceTags");
     
-    let replacementOptions = [];
-    
-    //Add options to be given to the skReplaceSubStrings function
-    if(whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value === "removeReplace")
-    {
-        replacementOptions.push(
-            { from: "\t", to: "" },
-            { from: "\v", to: "" },
-            { from: "\r", to: "" },
-            { from: "\n", to: "" },
-        );
-    }
-    
-    if(whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value === "spaceReplace")
-    {
-        replacementOptions.push(
-            { from: "\t", to: " " },
-            { from: "\v", to: " " },
-            { from: "\r", to: " " },
-            { from: "\n", to: " " },
-        );
-    }
-    
-    if(whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value === "escapeCodeReplace")
-    {
-        replacementOptions.push(
-            { from: "\t", to: String.raw`\t` },
-            { from: "\v", to: String.raw`\v` },
-            { from: "\r", to: String.raw`\r` },
-            { from: "\n", to: String.raw`\n` },
-        );
-    }
-    
-    if(escapeDoubleQuotes.checked)
-    {
-        replacementOptions.push(
-            { from: '"', to: String.raw`\"` }
-        );
-    }
-    
-    if(replaceTags.checked)
-    {
-        //The double braces need to be first (otherwise, "{:" will be replaced before "{{:",
-        //which would result with "{{:" becoming "{@ohb:")
-        replacementOptions.push(
-            { from: "{{:", to: "@odhb:" },
-            { from: ":}}", to: "@cdhb:" },
-            { from: "{:", to: "@ohb:" },
-            { from: ":}", to: "@chb:" },
-            { from: "{+", to: "@ohb+" },
-            { from: "+}", to: "@chb+" }
-        );
-    }
-    
-    //Now run the string through the skReplaceSubStrings function,
+	//Set the whitespaceOption (the text may need to be changed to be correct)
+	let whitespaceOption;
+	if(whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value === "removeReplace")
+	{
+		whitespaceOption = "remove"; //this is the valid option in skPrepareTemplateString()
+	}
+	else
+	{
+		whitespaceOption = whitespaceDropdown.options[whitespaceDropdown.selectedIndex].value;
+	}
+	
+	//Now run the string through the skPrepareTemplateString function,
     //and output to the prepareStringOutput textarea
-    stringOutput.value = skReplaceSubStrings(stringInput.value, replacementOptions);
+    stringOutput.value = skPrepareTemplateString(
+		stringInput.value, 
+		whitespaceOption,
+		escapeDoubleQuotes.checked,
+		replaceTags.checked
+	);
 }
 
 
@@ -121,13 +83,13 @@ function prepareStringClickAction()
 // be added as well if it isn't already there)
 function buildTemplateJSONClickAction()
 {
-    let skReplaceSubStrings = replaceSubstrings; //In the scriptKnapper library
+    const skBuildTemplateJSON = buildTemplateJSON; //In the scriptKnapper library
     
-    let templateName = document.getElementById("buildTemplateNameInput").value;
+    const templateName = document.getElementById("buildTemplateNameInput").value;
     document.getElementById("buildTemplateNameInput").value = "Template Name"; // Reset this now
-    let newTemplate = document.getElementById("buildTemplateJSONInput").value;
+    const newTemplate = document.getElementById("buildTemplateJSONInput").value;
     document.getElementById("buildTemplateJSONInput").value = "";
-    let outputBox = document.getElementById("buildTemplateJSONOutput");
+    const outputBox = document.getElementById("buildTemplateJSONOutput");
     let outputJSON = outputBox.value;
     
     
@@ -147,25 +109,10 @@ function buildTemplateJSONClickAction()
             + outputJSON.substring(outputJSON.lastIndexOf("}") + 1)
             + "\n";
     }
+	
+	
+	const returnedJSON = skBuildTemplateJSON([{ templateName: templateName, template: newTemplate }]);
+	outputJSON += returnedJSON.substring(2, returnedJSON.length - 2); //Remove the returned square braces
     
-    
-    
-    // Now replace all the whiteSpace, and escape any double-quotes
-    newTemplate = skReplaceSubStrings(
-        newTemplate,
-        [
-            { from: "\t", to: String.raw`\t` },
-            { from: "\v", to: String.raw`\v` },
-            { from: "\r", to: String.raw`\r` },
-            { from: "\n", to: String.raw`\n` },
-            { from: '"', to: String.raw`\"` }
-        ]
-    );
-    
-    
-    //Now put together the full template object, and add it to the JSON.
-    outputJSON += '\t{ "name": "' + templateName + '", "template": "' + newTemplate + '" }\n]';
-    
-    
-    outputBox.value = outputJSON;
+    outputBox.value = outputJSON + "\n]";
 }

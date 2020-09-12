@@ -1,27 +1,56 @@
 /*
 
-ScriptKnapper version: 2.0
+ScriptKnapper version: 3.0.0
 
 
 The entry point for UIs to use is scriptKnapperMain():
 
-scriptKnapperMain Inputs:
- - markupObjectsJSON: This is the JSON with the data to be entered into the templates.
- - templateObjectsJSON: This is the JSON containing all of the template objects.
+You may also want to make use of the prepareTemplateString() and buildTemplateJSON() functions in your project's build scripts. These should help when converting your templates into the correct JSON format.
+-----------------------------------------------------------
 
-scriptKnapperMain Output:
- - This function will return an array with 2 values, to be destructured by the caller.
- - The first value will be a boolean, which is true if there was an error, or otherwise false. 
- - The second value will be a string. This will be the result code after it has been generated, or an error if there was a problem during the process.
+scriptKnapperMain() details:
+
+Inputs:
+    - markupObjectsJSON: This is the JSON with the data to be entered into the template.
+    - templateObjectsJSON: This is the JSON with the different templates.
+            
+Output:
+    - This function will return an array with 2 values, to be destructured by the caller.
+    - The first value will be a boolean, which is true if there was an error, or otherwise false. 
+    - The second value will be a string. This will be the generated code/script, or an error if there was a problem during the process.
+
+-----------------------------------------------------------
+
+prepareTemplateString() details:
+
+Inputs:
+    - passedTemplateString: The string to be changed.
+    - whitespaceChange: How should the whitespace (not including space characters) in the string be handled? There are 4 options:
+        "none": Whitespace will not be changed.
+        "remove": Whitespace will just be removed.
+        "spaceReplace": Whitespace will be replaced with space characters.
+        "escapeCodeReplace": Whitespace will be replaced with escape codes.
+    - escapeDoubleQuotes: A boolean value. Should double-quote characters be escaped?
+    - replaceTags: A boolean value. Should ScriptKnapper tags be replaced with their respective replacement strings?
+            
+Output:
+    - This function will return a string, that has been changed based on the input settings.
+
+-----------------------------------------------------------
+
+buildTemplateJSON() details:
+
+Inputs:
+    - templates: An array of objects. Each object will have 2 properties: a "templateName" and a "template" (which is the text of the template).
+    - templatesAlreadyPrepared: A boolean value. Has the template text already been prepared?
+        
+Output:
+    - This function will return a JSON string, which will contain all of the given templates, in the structure required by scriptKnapperMain(). If templatesAlreadyPrepared is false, double quote characters will be escaped, and whitespace characters (such as tabs and new-lines, but not spaces) will be replaced with escape codes.
 
 -----------------------------------------------------------
 
 Changes in this build:
- - Changed the templating syntax to use tags that will be otherwise unlikely to occur in the user's scripts. Didn't want to make such a drastic change, but felt it was best as the project is in such an early stage, and the change does make the most sense.
- - The replaceSubstrings() function can now accept values that contain Regex special characters.
- - Major refactor of scriptKnapperMain(), which was a bloated function.
- - If calling a template that doesn't require any data, the user no longer needs to pass in an empty array -- or any data property at all.
- - findObjectStringLength() now takes in the opening and closing brace strings as parameters, to ensure that any handlebar braces used within any data values will not confuse the function.
+ - Added the prepareTemplateString() and buildTemplateJSON() functions. prepareTemplateString() can be used to prepare template text. buildTemplateJSON() takes an array of objects (each with a template name, and template text) and then generates the template JSON from that.
 
 -----------------------------------------------------------
 
@@ -82,6 +111,43 @@ function addDataObjectAdditionsFromTemplate(dataObject, template)
     }
     
     return [false, dataObject];
+}
+
+
+
+
+
+
+
+function buildTemplateJSON(templates, templatesAlreadyPrepared = false)
+{
+	let result = "[";
+	
+	templates.forEach(template => {
+		
+		let templateText = template.template;
+		
+		if(!templatesAlreadyPrepared)
+		{
+			templateText = replaceSubstrings(
+				templateText,
+				[
+					{ from: "\t", to: String.raw`\t` },
+					{ from: "\v", to: String.raw`\v` },
+					{ from: "\r", to: String.raw`\r` },
+					{ from: "\n", to: String.raw`\n` },
+					{ from: '"', to: String.raw`\"` }
+				]
+			);
+		}
+		
+		
+		if(result.charAt(result.length - 1) === "}") result += ",";
+		
+		result += '\n\t{ "name": "' + template.templateName + '", "template": "' + templateText + '" }';
+	});
+	
+	return result + "\n]";
 }
 
 
@@ -373,6 +439,75 @@ function prepareErrorMessage(message, templateName = "", dataJSONString = "")
     result += "Please correct these issues with the provided JSON, and then try again.";
     
     return result;
+}
+
+
+
+
+
+
+
+function prepareTemplateString(passedTemplateString, whitespaceChange = "none", 
+    escapeDoubleQuotes = false, replaceTags = false)
+{
+    let replacementOptions = []; 
+    
+    
+    if(whitespaceChange !== "none")
+    {
+        if(whitespaceChange === "remove")
+        {
+            replacementOptions.push(
+                { from: "\t", to: "" },
+                { from: "\v", to: "" },
+                { from: "\r", to: "" },
+                { from: "\n", to: "" },
+            );
+        } 
+        else if(whitespaceChange === "spaceReplace")
+        {
+            replacementOptions.push(
+                { from: "\t", to: " " },
+                { from: "\v", to: " " },
+                { from: "\r", to: " " },
+                { from: "\n", to: " " },
+            );
+        }
+        else if(whitespaceChange === "escapeCodeReplace")
+        {
+            replacementOptions.push(
+                { from: "\t", to: String.raw`\t` },
+                { from: "\v", to: String.raw`\v` },
+                { from: "\r", to: String.raw`\r` },
+                { from: "\n", to: String.raw`\n` },
+            );
+        }
+    }
+    
+    
+    if(escapeDoubleQuotes)
+    {
+        replacementOptions.push(
+            { from: '"', to: String.raw`\"` }
+        );
+    }
+    
+    if(replaceTags)
+    {
+        
+        
+        replacementOptions.push(
+            { from: "{{:", to: "@odhb:" },
+            { from: ":}}", to: "@cdhb:" },
+            { from: "{:", to: "@ohb:" },
+            { from: ":}", to: "@chb:" },
+            { from: "{+", to: "@ohb+" },
+            { from: "+}", to: "@chb+" }
+        );
+    }
+    
+    
+    return replaceSubstrings(passedTemplateString, replacementOptions);
 }
 
 
