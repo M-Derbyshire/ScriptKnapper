@@ -7,5 +7,5 @@ For a basic understanding of how to use ScriptKnapper (and the Web UI), see the 
 
 If you would like to use NodeJS to automate the code-generation process, then you should also see section 4 of the developer guide (also in the documentation directory). There are 3 functions in this section that you should look for: scriptKnapperMain, prepareTemplateString and buildTemplateJSON.
 
-[My Twitter: @mattdarbs](http://twitter.com/mattdarbs)
+[My Twitter: @mattdarbs](http://twitter.com/mattdarbs)  
 [My Portfolio](http://md-developer.uk)
