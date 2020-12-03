@@ -795,3 +795,7 @@ function scriptKnapperMain(markupObjectsJSON, templateObjectsJSON)
 
 
 
+
+exports.scriptKnapperMain = scriptKnapperMain;
+exports.prepareTemplateString = prepareTemplateString;
+exports.buildTemplateJSON = buildTemplateJSON;

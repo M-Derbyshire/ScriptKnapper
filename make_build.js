@@ -130,6 +130,13 @@ logIfNotSilent("Build file is now ready to be saved.");
 
 
 
+// Now we want to add any exports to the end of the file.
+config.exports.forEach((exp) => {
+	buildLines.push(`exports.${exp.exportName} = ${exp.functionName};`);
+});
+
+
+
 
 //Now save the new build file (if it already exists, replace it)
 try{
