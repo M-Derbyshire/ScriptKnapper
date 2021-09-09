@@ -1,4 +1,4 @@
-import sk from './entryPoint';
+const sk = require('./entryPoint');
 import scriptKnapperMain from './scriptKnapperMain/scriptKnapperMain';
 import prepareTemplateString from './prepareTemplateString/prepareTemplateString';
 import buildTemplateJSON from './buildTemplateJSON/buildTemplateJSON';
