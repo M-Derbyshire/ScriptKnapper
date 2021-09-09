@@ -1,6 +1,6 @@
 {
   "name": "scriptknapper",
-  "version": "2.0.0",
+  "version": "4.0.0",
   "description": "A javascript library for code/script generation, with JSON defined templates",
   "main": "dist/scriptknapper.bundle.js",
   "scripts": {
