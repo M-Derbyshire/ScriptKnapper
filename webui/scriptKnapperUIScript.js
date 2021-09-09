@@ -4,7 +4,7 @@
 // textarea.
 function transpileClickAction()
 {
-    let skMain = scriptKnapperMain; //In the scriptKnapper library
+    let skMain = window.scriptknapper.scriptKnapperMain; //In the scriptKnapper library
     
     let templateInput = document.getElementById("templateInput");
     let markupInput = document.getElementById("markupInput");
@@ -41,7 +41,7 @@ function transpileClickAction()
 // string.
 function prepareStringClickAction()
 {
-    const skPrepareTemplateString = prepareTemplateString; //In the scriptKnapper library
+    const skPrepareTemplateString = window.scriptknapper.prepareTemplateString; //In the scriptKnapper library
     const stringInput = document.getElementById("prepareStringInput");
     const stringOutput = document.getElementById("prepareStringOutput");
     
@@ -83,7 +83,7 @@ function prepareStringClickAction()
 // be added as well if it isn't already there)
 function buildTemplateJSONClickAction()
 {
-    const skBuildTemplateJSON = buildTemplateJSON; //In the scriptKnapper library
+    const skBuildTemplateJSON = window.scriptknapper.buildTemplateJSON; //In the scriptKnapper library
     
     const templateName = document.getElementById("buildTemplateNameInput").value;
     document.getElementById("buildTemplateNameInput").value = "Template Name"; // Reset this now
