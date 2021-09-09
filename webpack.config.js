@@ -12,5 +12,6 @@ module.exports = {
 			name: 'scriptknapper',
 			type: 'umd',
 		},
+		globalObject: 'this'
 	},
 };
