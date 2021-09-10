@@ -19,7 +19,19 @@ function transpileClickAction()
                                     //because the background becomes darker.
     
     //Now set the output text and background color
-    let [resultIsError, resultText] = skMain(markupInput.value, templateInput.value);
+	let resultText;
+	let resultIsError = false;
+	
+	try
+	{
+		resultText = skMain(markupInput.value, templateInput.value);
+	}
+	catch(e)
+	{
+		resultText = e.message;
+		resultIsError = true;
+	}
+     
     
     scriptOutput.value = resultText;
     scriptResultContainer.style.backgroundColor = (resultIsError) ? errorColor : successColor;
