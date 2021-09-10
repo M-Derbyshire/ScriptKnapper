@@ -53,7 +53,7 @@ test("resolveInnerTemplateCalls will return an error if a given template request
     
 	expect(() => {
 		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 
@@ -68,5 +68,5 @@ test("resolveInnerTemplateCalls will return an error if a given template request
     
     expect(() => {
 		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });

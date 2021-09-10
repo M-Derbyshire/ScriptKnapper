@@ -49,7 +49,7 @@ test("populateTemplateWithGivenData will return an error if it cannot find the r
     
 	expect(() => {
 		populateTemplateWithGivenData(data, templateName, simpleTemplate);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 test("populateTemplateWithGivenData will return an error if given a data value that is not a string", () => {
@@ -62,5 +62,5 @@ test("populateTemplateWithGivenData will return an error if given a data value t
     
     expect(() => {
 		populateTemplateWithGivenData(data, templateName, simpleTemplate);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });

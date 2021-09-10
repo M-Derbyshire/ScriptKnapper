@@ -44,7 +44,7 @@ test("feedDataObjectsIntoTemplate will return an error if addDataObjectAdditions
     
 	expect(() => {
 		feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 // ----------------------------------------------------
@@ -117,7 +117,7 @@ test("feedDataObjectsIntoTemplate will return an error returned by populateTempl
 	
     expect(() => {
 		feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
     
 });
 
@@ -139,7 +139,7 @@ test("feedDataObjectsIntoTemplate will return an error returned by resolveInnerT
     
 	expect(() => {
 		feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 // -------------------------------------------------------------------------------------

@@ -24,6 +24,6 @@ test("removeDataAdditionTags will return an error if the tags are not closed cor
     
     expect(() => {
 		removeDataAdditionTags(input);
-	}).toThrow(Exception);
+	}).toThrow(Error);
     
 });

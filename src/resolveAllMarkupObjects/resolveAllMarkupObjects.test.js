@@ -79,7 +79,7 @@ test("resolveAllMarkupObjects will return an error caught by the checkForMarkupO
     
 	expect(() => {
 		resolveAllMarkupObjects(markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 test("resolveAllMarkupObjects will return an error if feedDataObjectsIntoTemplate() returns one", () => {
@@ -92,6 +92,6 @@ test("resolveAllMarkupObjects will return an error if feedDataObjectsIntoTemplat
     
     expect(() => {
 		resolveAllMarkupObjects(markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
     
 });

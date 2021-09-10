@@ -9,7 +9,7 @@ test("addDataObjectAdditionsFromTemplate will return an error if the addition ta
 	
 	expect(() => {
 		addDataObjectAdditionsFromTemplate(dataObject, template);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 
@@ -22,7 +22,7 @@ test("addDataObjectAdditionsFromTemplate will return an error if the addition ta
     
     expect(() => {
 		addDataObjectAdditionsFromTemplate(dataObject, template);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 

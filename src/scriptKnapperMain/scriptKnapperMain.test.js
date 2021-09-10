@@ -37,7 +37,7 @@ test.each([
     
 	expect(() => {
 		scriptKnapperMain(markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 // --------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ test("scriptKnapperMain will return an error that is returned from resolveAllMar
 	
 	expect(() => {
 		scriptKnapperMain(markupObjects, templateObjects);
-	}).toThrow(Exception);
+	}).toThrow(Error);
 });
 
 // --------------------------------------------------------------------------------------
