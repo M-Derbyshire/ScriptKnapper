@@ -33,8 +33,6 @@ test.each([
 	]
 ])("scriptKnapperMain will return an error if the given markup or template JSON isn't valid", (markupObjects, templateObjects) => {
     
-    const resultText = scriptKnapperMain(markupObjects, templateObjects);
-    
 	expect(() => {
 		scriptKnapperMain(markupObjects, templateObjects);
 	}).toThrow(Error);

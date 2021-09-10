@@ -11,20 +11,15 @@ import findObjectStringLength from '../findObjectStringLength/findObjectStringLe
                     to use.
             
     Output:
-        - This function will return an array with 2 values,
-            to be destructured by the caller.
-        - The first value will be a boolean, which is true
-            if there was an error, or otherwise false. 
-        - The second value will be a string. This will be
+        - This function will throw if there is an error
+        - This function will return a string. This will be
             the template after it has been populated with
-            the given data, or an error if there was a 
-            problem populating the tmplate.
+            the given data.
 */
 
 function populateTemplateWithGivenData(dataObject, templateName, template)
 {
     let resultText = template;
-    let resultIsError = false;
     let errPreText; //The first part of the string to feed into prepareErrorMessage()
     let braceIndex; //The index of the first brace in the substring that is being searched 
                     //for braces
@@ -94,13 +89,13 @@ function populateTemplateWithGivenData(dataObject, templateName, template)
         }
         catch(err)
         {
-            resultText = prepareErrorMessage(errPreText + err, templateName, JSON.stringify(dataObject));
-            resultIsError = true;
-            break;
+            throw new Error(prepareErrorMessage(
+				errPreText + err, templateName, JSON.stringify(dataObject)
+			));
         }
     }
     
-    return [resultIsError, resultText];
+    return resultText;
 }
 
 export default populateTemplateWithGivenData;

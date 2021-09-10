@@ -72,9 +72,9 @@ test.each([
 
 test("resolveAllMarkupObjects will return an error caught by the checkForMarkupObjectError function", () => {
     
-    //No template
     const markupObjects = [{
-        data: [{}]
+		template: "test",
+        data: true //not an array
     }];
     
 	expect(() => {

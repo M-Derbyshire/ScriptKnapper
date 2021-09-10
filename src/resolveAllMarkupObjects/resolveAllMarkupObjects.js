@@ -11,13 +11,9 @@ import prepareErrorMessage from '../prepareErrorMessage/prepareErrorMessage';
         - templateObjects: This is an array of template objects.
             
     Output:
-        - This function will return an array with 2 values,
-            to be destructured by the caller.
-        - The first value will be a boolean, which is true
-            if there was an error, or otherwise false. 
-        - The second value will be a string. This will be
-            the generated code/script, or an error if 
-            there was a problem during the process.
+        - This function will throw if there is an error.
+        - This function will return a string. This will be
+            the generated code/script.
 */
 function resolveAllMarkupObjects(markupObjects, templateObjects)
 {
@@ -32,10 +28,9 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
     {
         for(let markupIter = 0; markupIter < markupObjects.length; markupIter++)
         {
-            //Check for any errors in the markup object
-            let [markupHasError, markupCheckText] = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
-            if(markupHasError) return [true, markupCheckText];
-            
+            //Check for any errors in the markup object (will return an empty string if not)
+            let markupCheckText = checkForMarkupObjectError(markupObjects[markupIter], templateObjects);
+            if(markupCheckText !== "") throw markupCheckText;
             
             
             //Get the correct template object for this markup object
@@ -56,12 +51,11 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
                 markupObjects[markupIter].data = [{}];
             }
             
-            let [dataObjectsResultIsError, dataObjectsResultText] = feedDataObjectsIntoTemplate(
+            let dataObjectsResultText = feedDataObjectsIntoTemplate(
                 templateObject, 
                 markupObjects[markupIter], 
                 templateObjects
             );
-            if(dataObjectsResultIsError) return [true, dataObjectsResultText];
             
             
             resultText += dataObjectsResultText;
@@ -69,19 +63,16 @@ function resolveAllMarkupObjects(markupObjects, templateObjects)
     }
     catch(err)
     {
-        const errPreText = "Error when generating a markup object's instructions: "
+        const errPreText = "Error when resolving a markup object: "
         
-        return [
-            true,
-            prepareErrorMessage(
+        throw new Error(prepareErrorMessage(
                 errPreText + err, 
                 errTemplateName,
                 JSON.stringify(errDataObject)
-            )
-        ];
+            ));
     }
     
-    return [false, resultText];
+    return resultText;
 }
 
 export default resolveAllMarkupObjects;

@@ -6,12 +6,8 @@ import prepareErrorMessage from './../prepareErrorMessage/prepareErrorMessage';
         - templateObjects: An array of template objects.
             
     Output:
-        - This function will return an array with 2 values,
-            to be destructured by the caller.
-        - The first value will be a boolean, which is true
-            if there was an error, or otherwise false. 
-        - The second value will be a string. This will be
-            an error if there was a problem, or otherwise a 
+        - This function will return a string. This will be
+            an error if there was an error with the object, or otherwise a 
             blank string.
 */
 function checkForMarkupObjectError(markupObject, templateObjects)
@@ -21,7 +17,8 @@ function checkForMarkupObjectError(markupObject, templateObjects)
     try
     {
         // Does the markupObject have a "template" property?
-        if(!markupObject.hasOwnProperty("template")) { throw "The given template call has not been given a template property."; }
+        if(!markupObject.hasOwnProperty("template"))
+			throw "The given template call has not been given a template property.";
         
         // If the called template doesn't exist, or if we have more then one of them
         let templateName = markupObject.template;
@@ -43,13 +40,10 @@ function checkForMarkupObjectError(markupObject, templateObjects)
     }
     catch(err)
     {
-        return [
-            true,
-            prepareErrorMessage(errPreText + err)
-        ];
+        return prepareErrorMessage(errPreText + err);
     }
     
-    return [false, ""];
+    return "";
 }
 
 export default checkForMarkupObjectError;

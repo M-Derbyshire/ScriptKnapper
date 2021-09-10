@@ -7,10 +7,8 @@ import findObjectStringLength from '../findObjectStringLength/findObjectStringLe
         - The current template, as a string.
             
     Output:
-        - If there is an error, the function will return an array. The first index will be true,
-            to say there has been an error, and the second will be the error text.
-        - If there is not an error, the function will return an array. The first index will be false,
-            to say there hasn't been an error, and the second will be the new version of the data 
+        - If there is an error, this will throw
+        - If there is not an error, the function will return the new version of the data 
             object, with the added properties.
 */
 
@@ -34,7 +32,7 @@ function addDataObjectAdditionsFromTemplate(dataObject, template)
         );
         if(objectLength < 0) //-1 means an error
         {
-            return [true, errPreText + "Data addition tag was not properly closed."];
+            throw new Error(errPreText + "Data addition tag was not properly closed.");
         }
         
         
@@ -48,7 +46,7 @@ function addDataObjectAdditionsFromTemplate(dataObject, template)
         }
         catch(err)
         {
-            return [true, errPreText + err];
+            throw new Error(errPreText + err);
         }
         
         
@@ -60,7 +58,7 @@ function addDataObjectAdditionsFromTemplate(dataObject, template)
         currentlyUnsearchedString = currentlyUnsearchedString.substring(braceIndex + objectLength, currentlyUnsearchedString.length);
     }
     
-    return [false, dataObject];
+    return dataObject;
 }
 
 export default addDataObjectAdditionsFromTemplate;

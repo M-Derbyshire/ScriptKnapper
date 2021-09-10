@@ -15,15 +15,11 @@ import prepareErrorMessage from '../prepareErrorMessage/prepareErrorMessage';
                     calling resolveInnerTemplateCalls()).
             
     Output:
-        - This function will return an array with 2 values,
-            to be destructured by the caller.
-        - The first value will be a boolean, which is true
-            if there was an error, or otherwise false. 
-        - The second value will be a string. This will be
+		- This function will throw if there is an error.
+        - This function will return a string. This will be
             the result code after it has been generated (the 
             result for all of the data objects for this template 
-            call), or it will be an error if there was a problem 
-            during the process.
+            call)
 */
 function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateObjects)
 {
@@ -38,30 +34,26 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             errDataJSON = JSON.stringify([markupObject.data[dataIter]]);
             
             //Add any data addition calls from the template to the data-object
-            let [dataObjectAdditionIsError, dataObjectAdditionResult] = addDataObjectAdditionsFromTemplate(
+            let dataObjectAdditionResult = addDataObjectAdditionsFromTemplate(
                 markupObject.data[dataIter],
                 templateObject.template
             );
-            if(dataObjectAdditionIsError) return [true, dataObjectAdditionResult];
             
             markupObject.data[dataIter] = dataObjectAdditionResult;
             
             //Now remove the data addition tags from the template string.
             //(DON'T REPLACE the templateObject.template here, as it affects later calls to the template!)
-            //This shouldn't error if the adding the additions didn't, but will check just in case of unforseen bugs
-            let [additionTagsRemovalIsError, additionTagsRemovalResult] = removeDataAdditionTags(templateObject.template);
-            if(additionTagsRemovalIsError) return [true, additionTagsRemovalResult];
+            let additionTagsRemovalResult = removeDataAdditionTags(templateObject.template);
             
             
             
             
             //Populate the template with the data values
-            let [thisIterationResultIsError, thisIterationResultText] = populateTemplateWithGivenData(
+            let thisIterationResultText = populateTemplateWithGivenData(
                 markupObject.data[dataIter],
                 templateObject.name,
                 additionTagsRemovalResult
             );
-            if(thisIterationResultIsError) return [true, thisIterationResultText];
             
             
             
@@ -69,12 +61,11 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
             //Now we need to check if there's any embedded template calls, and resolve them.
             errPreText = "Encountered a problem parsing a call to an embedded template: ";
             
-            const [innerTemplateResolveIsError, innerTemplateResolveResultText] = resolveInnerTemplateCalls(
+            const innerTemplateResolveResultText = resolveInnerTemplateCalls(
                 thisIterationResultText,
                 markupObject.data[dataIter], //We only want the current data object here
                 allTemplateObjects //all the templates
             );
-            if(innerTemplateResolveIsError) return [true, innerTemplateResolveResultText];
             
             
             //Finally, add to the result to be returned.
@@ -83,15 +74,12 @@ function feedDataObjectsIntoTemplate(templateObject, markupObject, allTemplateOb
     }
     catch(err)
     {
-        return [
-            true,
-            prepareErrorMessage(errPreText + err, templateObject.name, errDataJSON)
-        ];
+        throw Error(prepareErrorMessage(errPreText + err, templateObject.name, errDataJSON));
     }
     
     
     
-    return [false, resultText];
+    return resultText;
 }
 
 export default feedDataObjectsIntoTemplate;

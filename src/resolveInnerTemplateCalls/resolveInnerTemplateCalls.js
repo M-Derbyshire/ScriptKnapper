@@ -11,13 +11,9 @@ import resolveAllMarkupObjects from '../resolveAllMarkupObjects/resolveAllMarkup
         - templateObjects: This is the array of template objects.
             
     Output:
-        - This function will return an array with 2 values,
-            to be destructured by the caller.
-        - The first value will be a boolean, which is true
-            if there was an error, or otherwise false. 
-        - The second value will be a string. This will be
-            the given text, with inner-templates resolved, 
-            or an error if there was a problem.
+        - This function will throw if there is an error.
+        - This function will return a string. This will be
+            the given text, with inner-templates resolved.
 */
 
 function resolveInnerTemplateCalls(thisIterationResultText, dataObject, templateObjects)
@@ -31,14 +27,11 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
         objectLength = findObjectStringLength(thisIterationResultText.substring(braceIndex), "{{:", ":}}");
         if(objectLength === -1)
         {
-            return [
-                true,
-                prepareErrorMessage(
-                    errPreText + "Embedded template object is invalid or incomplete.", 
-                    "Unable to determine the template called within an embedded template call.",
-                    JSON.stringify(dataObject)
-                )
-            ];
+            throw new Error(prepareErrorMessage(
+				errPreText + "Embedded template object is invalid or incomplete.", 
+				"Unable to determine the template called within an embedded template call.",
+				JSON.stringify(dataObject)
+			));
         }
         else
         {
@@ -53,14 +46,11 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
             }
             catch(err)
             {
-                return [
-                    true,
-                    prepareErrorMessage(
-                        errPreText + "Embedded template object is invalid.", 
-                        "Unable to determine the template called within an embedded template call.",
-                        JSON.stringify(dataObject)
-                    )
-                ];
+                throw new Error(prepareErrorMessage(
+					errPreText + "Embedded template object is invalid.", 
+					"Unable to determine the template called within an embedded template call.",
+					JSON.stringify(dataObject)
+				));
             }
             
             //Merge any data objects in the template call with the current data object
@@ -75,34 +65,23 @@ function resolveInnerTemplateCalls(thisIterationResultText, dataObject, template
             
             //Now feed the data and template objects back through this process,
             //to be treated like a regular template call.
-            let [embeddedTemplateResultIsError, embeddedTemplateResultText] = resolveAllMarkupObjects(
+            let embeddedTemplateResultText = resolveAllMarkupObjects(
                 [mergedDataObject], 
                 templateObjects
             );
             
-            if(embeddedTemplateResultIsError)
-            {
-                return [
-                    true,
-                    embeddedTemplateResultText
-                ];
-            }
-            else
-            {
-                // Replace the template call with its result
-                thisIterationResultText = 
-                    thisIterationResultText.substring(0, braceIndex) + 
-                    embeddedTemplateResultText +
-                    thisIterationResultText.substring(braceIndex + objectLength);
-            }
+			
+			
+			// Replace the template call with its result
+			thisIterationResultText = 
+				thisIterationResultText.substring(0, braceIndex) + 
+				embeddedTemplateResultText +
+				thisIterationResultText.substring(braceIndex + objectLength);
         }
     }
     
     
-    return [
-        false,
-        thisIterationResultText
-    ];
+    return thisIterationResultText;
 }
 
 export default resolveInnerTemplateCalls;
