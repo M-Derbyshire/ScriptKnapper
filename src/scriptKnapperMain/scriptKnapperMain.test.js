@@ -11,39 +11,33 @@ const templateObjects = String.raw`[
 
 //-------------------------------------------------------------------------------------------
 
-test("scriptKnapperMain will return an error if the given markup or template JSON isn't valid", () => {
+test.each([
+	[
+		"fksdjfkdjfksjfkdjfklsjf",
+		templateObjects
+	],
+	[
+		JSON.stringify([
+			{
+				template: "simpleTemplate",
+				data: [
+					{ 
+						data1: "theData1", 
+						data2: "theData2",
+						data3: "theData3" 
+					},
+				]
+			}
+		]),
+		"khdjashkjahsdkjashd"
+	]
+])("scriptKnapperMain will return an error if the given markup or template JSON isn't valid", (markupObjects, templateObjects) => {
     
-    const markupObjects1 = "fksdjfkdjfksjfkdjfklsjf";
-    const templateObjects1 = templateObjects;
+    const resultText = scriptKnapperMain(markupObjects, templateObjects);
     
-    
-    const markup2 = {
-        template: "simpleTemplate",
-        data: [
-            { 
-                data1: "theData1", 
-                data2: "theData2",
-                data3: "theData3" 
-            },
-        ]
-    };
-    
-    const markupObjects2 = JSON.stringify([
-        markup2
-    ]);
-    
-    const templateObjects2 = "khdjashkjahsdkjashd";
-    
-    const [resultError1, resultText1] = scriptKnapperMain(markupObjects1, templateObjects1);
-    const [resultError2, resultText2] = scriptKnapperMain(markupObjects2, templateObjects2);
-    
-    expect(typeof resultError1).toBe("boolean");
-    expect(typeof resultText1).toBe("string");
-    expect(typeof resultError2).toBe("boolean");
-    expect(typeof resultText2).toBe("string");
-    
-    expect(resultError1).toBeTruthy();
-    expect(resultError2).toBeTruthy();
+	expect(() => {
+		scriptKnapperMain(markupObjects, templateObjects);
+	}).toThrow(Exception);
 });
 
 // --------------------------------------------------------------------------------------
@@ -59,12 +53,9 @@ test("scriptKnapperMain will return the results from resolveAllMarkupObjects()",
         ]
     }]);
     
-    const [resultError, resultText] = scriptKnapperMain(markupObjectsJSON, templateObjects);
+    const resultText = scriptKnapperMain(markupObjectsJSON, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).toContain("theData1");
     expect(resultText).toContain("theData2");
     expect(resultText).toContain("theData3");
@@ -80,12 +71,10 @@ test("scriptKnapperMain will return an error that is returned from resolveAllMar
         data: [{}] //This template requires data, but none given
     }]);
     
-    const [resultError, resultText] = scriptKnapperMain(markupObjectsJSON, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+	
+	expect(() => {
+		scriptKnapperMain(markupObjects, templateObjects);
+	}).toThrow(Exception);
 });
 
 // --------------------------------------------------------------------------------------
@@ -109,12 +98,9 @@ test("scriptKnapperMain will call replaceTagStringSubstitutions() and return the
         markup
     ]);
     
-    const [resultError, resultText] = scriptKnapperMain(markupObjects, templateObjects);
+    const resultText = scriptKnapperMain(markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).not.toContain("@ohb:");
     expect(resultText).not.toContain("@chb:");
     expect(resultText).not.toContain("@odhb:");

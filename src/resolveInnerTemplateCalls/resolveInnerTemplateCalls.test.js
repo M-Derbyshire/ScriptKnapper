@@ -18,12 +18,9 @@ test("resolveInnerTemplateCalls will embed the results of an inner template into
     
     const currentText = 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" }, { "data1": "theEmbeddedData2" }] :}} - This is now the string again.';
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
+    const resultText = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).toBe("testTemplate: this is some more data here: theEmbeddedData1this is some more data here: theEmbeddedData2 - This is now the string again.");
 });
 
@@ -38,12 +35,9 @@ test("resolveInnerTemplateCalls will embed the results of a template call within
     
     const currentText = '{{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData" }, { "data1": "{:embedLayer3Data:}" }] :}}';
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
+    const resultText = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).toBe("this is some more data here: theEmbeddedDatathis is some more data here:  - this is some more data here: theDeepEmbeddedData - ");
 });
 
@@ -57,12 +51,9 @@ test("resolveInnerTemplateCalls will return an error if a given template request
     
     const currentText = 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" THERE SHOULD BE A CLOSE BRACE HERE, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ';
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+	expect(() => {
+		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
+	}).toThrow(Exception);
 });
 
 
@@ -75,10 +66,7 @@ test("resolveInnerTemplateCalls will return an error if a given template request
     
     const currentText = "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ";
     
-    const [resultError, resultText] = resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+    expect(() => {
+		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
+	}).toThrow(Exception);
 });

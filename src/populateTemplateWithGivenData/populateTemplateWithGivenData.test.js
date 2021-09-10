@@ -13,13 +13,9 @@ test("populateTemplateWithGivenData will fill a template with simple strings as 
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
+    const resultText = populateTemplateWithGivenData(data, templateName, simpleTemplate);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    
     expect(resultText).toContain(data.data1);
     expect(resultText).toContain(data.data2);
     expect(resultText).toContain(data.data3);
@@ -33,13 +29,9 @@ test("populateTemplateWithGivenData will not attempt to resolve calls to other t
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
+    const resultText = populateTemplateWithGivenData(data, templateName, simpleTemplate);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
-    
     expect(resultText).toContain(data.data1);
     expect(resultText).toContain(data.data2);
     expect(resultText).toContain(data.data3);
@@ -55,12 +47,9 @@ test("populateTemplateWithGivenData will return an error if it cannot find the r
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+	expect(() => {
+		populateTemplateWithGivenData(data, templateName, simpleTemplate);
+	}).toThrow(Exception);
 });
 
 test("populateTemplateWithGivenData will return an error if given a data value that is not a string", () => {
@@ -71,10 +60,7 @@ test("populateTemplateWithGivenData will return an error if given a data value t
         "data3": "testData3"
     };
     
-    const [resultError, resultText] = populateTemplateWithGivenData(data, templateName, simpleTemplate);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+    expect(() => {
+		populateTemplateWithGivenData(data, templateName, simpleTemplate);
+	}).toThrow(Exception);
 });

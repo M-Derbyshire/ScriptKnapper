@@ -1,6 +1,6 @@
 import feedDataObjectsIntoTemplate from './feedDataObjectsIntoTemplate';
 
-//This is purposefull set to let (one of the tests checks that a template value has not been changed)
+//This is purposefully set to let, rather than const
 let templateObjects = JSON.parse(String.raw`[
     {"name": "simpleTemplate","template": "this is {: data1 :}, and that is {:data2:}, and over there is {:data3 :}. Watch out for @ohb:, @chb:, @odhb:, @cdhb:, @ohb+ and @chb+ you know."},
     {"name": "templateLayer2","template": "this is some more data here: {:data1:}"},
@@ -22,12 +22,10 @@ test("feedDataObjectsIntoTemplate will call addDataObjectAdditionsFromTemplate()
         data: [{}]
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+    const resultText = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
     
-    expect(resultError).toBeFalsy();
     expect(resultText).not.toContain('{+ "testProp": "test" +}');
     expect(resultText).toContain("test");
     
@@ -44,12 +42,9 @@ test("feedDataObjectsIntoTemplate will return an error if addDataObjectAdditions
         data: [{}]
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+	expect(() => {
+		feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+	}).toThrow(Exception);
 });
 
 // ----------------------------------------------------
@@ -71,12 +66,9 @@ test("feedDataObjectsIntoTemplate will insert data that has been passed down fro
         ]
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+    const resultText = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).toContain("hello, theData3");
 });
 
@@ -101,12 +93,9 @@ test("feedDataObjectsIntoTemplate will resolve a parameter call correctly follow
         ]
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+    const resultText = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).toContain("theData1");
     expect(resultText).toContain("theData2");
     expect(resultText).toContain("theData3");
@@ -125,12 +114,10 @@ test("feedDataObjectsIntoTemplate will return an error returned by populateTempl
         data: [{}] //No data
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+	
+    expect(() => {
+		feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+	}).toThrow(Exception);
     
 });
 
@@ -149,13 +136,10 @@ test("feedDataObjectsIntoTemplate will return an error returned by resolveInnerT
         }]
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
-    
+	expect(() => {
+		feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+	}).toThrow(Exception);
 });
 
 // -------------------------------------------------------------------------------------
@@ -171,12 +155,9 @@ test("feedDataObjectsIntoTemplate will not remove the actual addition tag from t
         data: [{}]
     };
     
-    const [resultError, resultText] = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
+    const resultText = feedDataObjectsIntoTemplate(thisTemplateObject, markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(thisTemplateObject.template).toContain("{+");
     expect(thisTemplateObject.template).toContain("+}");
 });

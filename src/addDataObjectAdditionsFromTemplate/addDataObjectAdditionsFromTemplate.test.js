@@ -6,13 +6,10 @@ test("addDataObjectAdditionsFromTemplate will return an error if the addition ta
     const dataObject = {
         someData: "some current data"
     };
-    
-    const [isError, result] = addDataObjectAdditionsFromTemplate(dataObject, template);
-    
-    expect(typeof isError).toBe("boolean");
-    expect(typeof result).toBe("string");
-    
-    expect(isError).toBeTruthy();
+	
+	expect(() => {
+		addDataObjectAdditionsFromTemplate(dataObject, template);
+	}).toThrow(Exception);
 });
 
 
@@ -23,12 +20,9 @@ test("addDataObjectAdditionsFromTemplate will return an error if the addition ta
         someData: "some current data"
     };
     
-    const [isError, result] = addDataObjectAdditionsFromTemplate(dataObject, template);
-    
-    expect(typeof isError).toBe("boolean");
-    expect(typeof result).toBe("string");
-    
-    expect(isError).toBeTruthy();
+    expect(() => {
+		addDataObjectAdditionsFromTemplate(dataObject, template);
+	}).toThrow(Exception);
 });
 
 
@@ -39,11 +33,8 @@ test("addDataObjectAdditionsFromTemplate will return the object with both old an
         someData: "some current data"
     };
     
-    const [isError, result] = addDataObjectAdditionsFromTemplate(dataObject, template);
+    const result = addDataObjectAdditionsFromTemplate(dataObject, template);
     
-    expect(typeof isError).toBe("boolean");
-    
-    expect(isError).toBeFalsy();
     expect(result.hasOwnProperty("someData")).toBeTruthy();
     expect(result.someData).toBe("some current data");
     expect(result.hasOwnProperty("newData")).toBeTruthy();
@@ -58,11 +49,8 @@ test("addDataObjectAdditionsFromTemplate will return an object with data from mu
         someData: "some current data"
     };
     
-    const [isError, result] = addDataObjectAdditionsFromTemplate(dataObject, template);
+    const result = addDataObjectAdditionsFromTemplate(dataObject, template);
     
-    expect(typeof isError).toBe("boolean");
-    
-    expect(isError).toBeFalsy();
     expect(result.hasOwnProperty("someData")).toBeTruthy();
     expect(result.someData).toBe("some current data");
     expect(result.hasOwnProperty("newData1")).toBeTruthy();
@@ -79,10 +67,8 @@ test("If the data object already contains this property, addDataObjectAdditionsF
         someData: "some current data"
     };
     
-    const [isError, result] = addDataObjectAdditionsFromTemplate(dataObject, template);
+    const result = addDataObjectAdditionsFromTemplate(dataObject, template);
     
-    expect(typeof isError).toBe("boolean");
-    expect(isError).toBeFalsy();
     expect(result.hasOwnProperty("someData")).toBeTruthy();
     expect(result.someData).toBe("some new data");
 })

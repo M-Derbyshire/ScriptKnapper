@@ -34,12 +34,9 @@ test("resolveAllMarkupObjects will return results for each markup object it is g
         markup2
     ];
     
-    const [resultError, resultText] = resolveAllMarkupObjects(markupObjects, templateObjects);
+    const resultText = resolveAllMarkupObjects(markupObjects, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeFalsy();
     expect(resultText).toContain("theData1");
     expect(resultText).toContain("theData2");
     expect(resultText).toContain("theData3");
@@ -51,32 +48,24 @@ test("resolveAllMarkupObjects will return results for each markup object it is g
     expect(resultText).toContain("theData9");
 });
 
-test("resolveAllMarkupObjects will generate a template once, with an empty data object, if no data is given for it", () => {
+test.each([
+	[
+		[{
+			template: "noDataTemplate",
+			data: [] //Empty data array
+		}]
+	],
+	[
+		[{
+			//No data property
+			template: "noDataTemplate"
+		}]
+	]
+])("resolveAllMarkupObjects will generate a template once, with an empty data object, if no data is given for it", (markupObjects) => {
     
-    const templateName = "noDataTemplate";
-    
-    //Empty data array
-    const markupObjects1 = [{
-        template: templateName,
-        data: []
-    }];
-    
-    //No data property
-    const markupObjects2 = [{
-        template: templateName
-    }];
-    
-    const [resultError1, resultText1] = resolveAllMarkupObjects(markupObjects1, templateObjects);
-    expect(typeof resultError1).toBe("boolean");
-    expect(typeof resultText1).toBe("string");
-    expect(resultError1).toBeFalsy();
-    expect(resultText1).toContain("I dont need any data."); //Found in the "noDataTemplate" template
-    
-    const [resultError2, resultText2] = resolveAllMarkupObjects(markupObjects2, templateObjects);
-    expect(typeof resultError2).toBe("boolean");
-    expect(typeof resultText2).toBe("string");
-    expect(resultError2).toBeFalsy();
-    expect(resultText2).toContain("I dont need any data.");
+    const resultText = resolveAllMarkupObjects(markupObjects, templateObjects);
+    expect(typeof resultText).toBe("string");
+    expect(resultText).toContain("I dont need any data.");
 });
 
 //-----------------------------------------------------------------------------------
@@ -88,12 +77,9 @@ test("resolveAllMarkupObjects will return an error caught by the checkForMarkupO
         data: [{}]
     }];
     
-    const [resultError, resultText] = resolveAllMarkupObjects(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+	expect(() => {
+		resolveAllMarkupObjects(markupObjects, templateObjects);
+	}).toThrow(Exception);
 });
 
 test("resolveAllMarkupObjects will return an error if feedDataObjectsIntoTemplate() returns one", () => {
@@ -104,11 +90,8 @@ test("resolveAllMarkupObjects will return an error if feedDataObjectsIntoTemplat
         data: [{}]
     }];
     
-    const [resultError, resultText] = resolveAllMarkupObjects(markupObjects, templateObjects);
-    
-    expect(typeof resultError).toBe("boolean");
-    expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+    expect(() => {
+		resolveAllMarkupObjects(markupObjects, templateObjects);
+	}).toThrow(Exception);
     
 });

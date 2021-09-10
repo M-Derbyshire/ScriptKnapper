@@ -19,12 +19,10 @@ test("checkForMarkupObjectError will return an error if it cannot find the reque
     
     const markupObject = JSON.stringify(markup);
     
-    const [resultError, resultText] = checkForMarkupObjectError(markupObject, templateObjects);
+    const resultText = checkForMarkupObjectError(markupObject, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+    expect(resultText).not.toEqual("");
 });
 
 test("checkForMarkupObjectError will return an error if the given data object is not an array", () => {
@@ -38,15 +36,13 @@ test("checkForMarkupObjectError will return an error if the given data object is
     
     const markupObject = JSON.stringify(markup);
     
-    const [resultError, resultText] = checkForMarkupObjectError(markupObject, templateObjects);
+    const resultText = checkForMarkupObjectError(markupObject, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    
-    expect(resultError).toBeTruthy();
+    expect(resultText).not.toEqual("");
 });
 
-test("scriptKnapperMain will return an error if a given embedded template request object doesn't have a template property", () => {
+test("checkForMarkupObjectError will return an error if a given embedded template request object doesn't have a template property", () => {
     
     const templateName = "simpleTemplate";
     
@@ -63,9 +59,30 @@ test("scriptKnapperMain will return an error if a given embedded template reques
     
     const markupObject = JSON.stringify(markup);
     
-    const [resultError, resultText] = checkForMarkupObjectError(markupObject, templateObjects);
+    const resultText = checkForMarkupObjectError(markupObject, templateObjects);
     
-    expect(typeof resultError).toBe("boolean");
     expect(typeof resultText).toBe("string");
-    expect(resultError).toBeTruthy();
+    expect(resultText).not.toEqual("");
+});
+
+test("checkForMarkupObjectError will return an empty string if there is no error", () => {
+	
+	const templateName = "simpleTemplate";
+    
+    const markup = {
+		template: templateName,
+        data: [
+            { 
+                data1: "theData1", 
+                data2: "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ",
+                data3: "theData3" 
+            }
+        ]
+    };
+    
+    const markupObject = JSON.stringify(markup);
+    
+    const resultText = checkForMarkupObjectError(markupObject, templateObjects);
+	
+    expect(resultText).toEqual("");
 });
