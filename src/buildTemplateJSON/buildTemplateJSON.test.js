@@ -26,7 +26,7 @@ const inputPreparedTemplate = 'There once was a man from Nantucket.\nHe had a ch
 test("buildTemplateJSON() will return an empty array string, if input array has 0 objects", () => {
 	
 	const result = buildTemplateJSON([]);
-	expect(result).toEqual("[\n]");
+	expect(JSON.parse(result)).toEqual([]); //May have a new line, etc
 });
 
 test("buildTemplateJSON() will return json in the correct structure, with the given values, for 1 template", () => {
