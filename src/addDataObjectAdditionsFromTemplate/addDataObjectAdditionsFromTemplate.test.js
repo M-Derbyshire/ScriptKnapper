@@ -7,9 +7,12 @@ test("addDataObjectAdditionsFromTemplate will return an error if the addition ta
         someData: "some current data"
     };
 	
-	expect(() => {
+	const shouldThrow = () => {
 		addDataObjectAdditionsFromTemplate(dataObject, template);
-	}).toThrow(Error);
+	}
+	
+	expect(shouldThrow).toThrow(Error);
+	expect(shouldThrow).toThrow(/Data addition tag was not properly closed/);
 });
 
 
@@ -20,9 +23,12 @@ test("addDataObjectAdditionsFromTemplate will return an error if the addition ta
         someData: "some current data"
     };
     
-    expect(() => {
+    const shouldThrow = () => {
 		addDataObjectAdditionsFromTemplate(dataObject, template);
-	}).toThrow(Error);
+	}
+	
+	expect(shouldThrow).toThrow(Error);
+	expect(shouldThrow).toThrow(/JSON/);
 });
 
 
