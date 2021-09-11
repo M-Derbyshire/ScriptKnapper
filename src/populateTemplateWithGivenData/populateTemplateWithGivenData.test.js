@@ -47,9 +47,13 @@ test("populateTemplateWithGivenData will return an error if it cannot find the r
         "data3": "testData3"
     };
     
-	expect(() => {
+	const willThrow = () => {
 		populateTemplateWithGivenData(data, templateName, simpleTemplate);
-	}).toThrow(Error);
+	};
+	
+	expect(willThrow).toThrow(Error);
+	expect(willThrow)
+		.toThrow(/Encountered a call to a property \(data2\) that hasn't been passed to the template/);
 });
 
 test("populateTemplateWithGivenData will return an error if given a data value that is not a string", () => {
@@ -60,7 +64,36 @@ test("populateTemplateWithGivenData will return an error if given a data value t
         "data3": "testData3"
     };
     
-    expect(() => {
+	const willThrow = () => {
 		populateTemplateWithGivenData(data, templateName, simpleTemplate);
-	}).toThrow(Error);
+	};
+	
+    expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(/Encountered a call to a property \(data2\) that did not contain a string/);
+});
+
+test("populateTemplateWithGivenData will return an error if the template contains an unclosed inner-template call", () => {
+	
+	const data = {};
+	const template = "test test test {{: \"name\": \"test\", \"template\": \"test\" that was not closed";
+	
+	const willThrow = () => {
+		populateTemplateWithGivenData(data, "templateName", template);
+	};
+	
+	expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(/Encountered an incorrectly formatted call to a template/);
+});
+
+test("populateTemplateWithGivenData will return an error if the template contains an unclosed data call", () => {
+	
+	const data = { "data1": "data" };
+	const template = "test test test {: data1 that was not closed";
+	
+	const willThrow = () => {
+		populateTemplateWithGivenData(data, "templateName", template);
+	};
+	
+	expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(/Encountered an incomplete call to a data property/);
 });
