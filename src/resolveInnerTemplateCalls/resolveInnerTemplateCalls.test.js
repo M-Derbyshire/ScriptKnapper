@@ -51,9 +51,12 @@ test("resolveInnerTemplateCalls will return an error if a given template request
     
     const currentText = 'testTemplate: {{:"template": "templateLayer2", "data": [{ "data1": "theEmbeddedData1" THERE SHOULD BE A CLOSE BRACE HERE, { "data1": "theEmbeddedData2" }] :}} - This is now the string again. ';
     
-	expect(() => {
+	const willThrow = () => {
 		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
-	}).toThrow(Error);
+	};
+	
+    expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(/Embedded template object is invalid/);
 });
 
 
@@ -66,7 +69,26 @@ test("resolveInnerTemplateCalls will return an error if a given template request
     
     const currentText = "testTemplate: {{: sjdhfsjdhfkjsdhf :}} - This is now the string again. ";
     
-    expect(() => {
+	const willThrow = () => {
 		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
-	}).toThrow(Error);
+	};
+	
+    expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(/Embedded template object is invalid/);
+});
+
+test("resolveInnerTemplateCalls will return an error if a given template request object has an unclosed inner-template call", () => {
+    
+    const dataObject = { 
+        data1: "theData1"
+    };
+    
+    const currentText = "testTemplate: {{: \"template\": \"templateLayer2\", \"data\": \"fjsfskdhf\" - Didn't close that remplate. ";
+    
+	const willThrow = () => {
+		resolveInnerTemplateCalls(currentText, dataObject, templateObjects);
+	};
+	
+    expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(/Embedded template object is invalid or incomplete/);
 });
