@@ -14,7 +14,8 @@ const templateObjects = String.raw`[
 test.each([
 	[
 		"fksdjfkdjfksjfkdjfklsjf",
-		templateObjects
+		templateObjects,
+		/Encountered a problem parsing the provided markup JSON/
 	],
 	[
 		JSON.stringify([
@@ -29,13 +30,17 @@ test.each([
 				]
 			}
 		]),
-		"khdjashkjahsdkjashd"
+		"khdjashkjahsdkjashd",
+		/Encountered a problem parsing the provided template JSON/
 	]
-])("scriptKnapperMain will return an error if the given markup or template JSON isn't valid", (markupObjects, templateObjects) => {
+])("scriptKnapperMain will return an error if the given markup or template JSON isn't valid", (markupObjects, templateObjects, errRegex) => {
     
-	expect(() => {
+	const willThrow = () => {
 		scriptKnapperMain(markupObjects, templateObjects);
-	}).toThrow(Error);
+	};
+	
+	expect(willThrow).toThrow(Error);
+	expect(willThrow).toThrow(errRegex);
 });
 
 // --------------------------------------------------------------------------------------
