@@ -33,7 +33,9 @@ test("checkForMarkupObjectError will return an error if it cannot find the reque
     const resultText = checkForMarkupObjectError(markupObject, templateObjects);
     
     expect(typeof resultText).toBe("string");
-    expect(resultText).not.toEqual("");
+    expect(resultText)
+		.toEqual(expect.stringContaining("The given template name (" + templateName + ") is not recognised"));
+	
 });
 
 test("checkForMarkupObjectError will return an error if the given data object is not an array", () => {
@@ -48,7 +50,9 @@ test("checkForMarkupObjectError will return an error if the given data object is
     const resultText = checkForMarkupObjectError(markupObject, templateObjects);
     
     expect(typeof resultText).toBe("string");
-    expect(resultText).not.toEqual("");
+    expect(resultText).toEqual(
+		expect.stringContaining("The provided data to the " + templateName + " template is not in an array")
+	);
 });
 
 test("checkForMarkupObjectError will return an error if a given embedded template request object doesn't have a template property", () => {
@@ -69,7 +73,9 @@ test("checkForMarkupObjectError will return an error if a given embedded templat
     const resultText = checkForMarkupObjectError(markupObject, templateObjects);
     
     expect(typeof resultText).toBe("string");
-    expect(resultText).not.toEqual("");
+    expect(resultText).toEqual(
+		expect.stringContaining("The given template call has not been given a template property")
+	);
 });
 
 test("checkForMarkupObjectError will return an empty string if there is no error", () => {
