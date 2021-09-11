@@ -12,7 +12,7 @@ test("mergeObjects will return an object with the same props/values as the 1 obj
     
 });
 
-test("mergeObjects will return an object that is a merge of 2 given objects (prioritising the values in the first)", () => {
+test("mergeObjects will return a completely new object that is a merge of 2 given objects (prioritising the values in the first)", () => {
     
     const priorityObject = {
         name: "NameWillBeMatthew",
@@ -32,6 +32,8 @@ test("mergeObjects will return an object that is a merge of 2 given objects (pri
     expect(result.name).toBe("NameWillBeMatthew");
     expect(result.age).toBe(5);
     expect(result.rank).toBe(10);
+	expect(result === priorityObject).toBeFalsy();
+	expect(result === secondaryObject).toBeFalsy();
     
 });
 
